@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Static validation for the reusable Claude Code AI team starter kit.
 
-Checks expected agent/skill counts, required files, and basic frontmatter.
-Does not start Claude Code, create an application, or execute application tests.
+Checks inventory, required files, basic frontmatter, and critical orchestration
+contract markers. This is static validation only; it does not prove Claude Code
+runtime discovery, delegation, atomic locking, application execution, or tests.
 """
 from pathlib import Path
 import re
@@ -11,7 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_AGENTS = 12
 EXPECTED_SKILLS = 18
-errors = []
+errors: list[str] = []
 
 agents = sorted((ROOT / ".claude" / "agents").glob("*.md"))
 skills = sorted((ROOT / ".claude" / "skills").glob("*/SKILL.md"))
@@ -21,15 +22,14 @@ if len(agents) != EXPECTED_AGENTS:
 if len(skills) != EXPECTED_SKILLS:
     errors.append(f"Expected {EXPECTED_SKILLS} skill files, found {len(skills)}")
 
+
 def parse_frontmatter(path: Path) -> dict[str, str]:
-    """Parse the simple key: value fields required by this starter kit."""
     relative = path.relative_to(ROOT)
     try:
         text = path.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as exc:
         errors.append(f"Cannot read {relative}: {exc}")
         return {}
-
     if not text.startswith("---\n"):
         errors.append(f"Frontmatter must start with ---: {relative}")
         return {}
@@ -37,7 +37,6 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
     if not match:
         errors.append(f"Frontmatter closing delimiter missing: {relative}")
         return {}
-
     block = text[4:4 + match.start()]
     fields: dict[str, str] = {}
     for line_number, line in enumerate(block.splitlines(), start=2):
@@ -55,17 +54,16 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
         if key in fields:
             errors.append(f"Duplicate frontmatter key '{key}' in {relative}")
         fields[key] = value
-
     for required in ("name", "description"):
         if not fields.get(required, "").strip():
             errors.append(f"Missing or empty '{required}' in {relative}")
     return fields
 
+
 def check_unique_names(paths: list[Path], kind: str) -> None:
     seen: dict[str, Path] = {}
     for path in paths:
-        fields = parse_frontmatter(path)
-        name = fields.get("name", "").strip()
+        name = parse_frontmatter(path).get("name", "").strip()
         if not name:
             continue
         if name in seen:
@@ -76,6 +74,7 @@ def check_unique_names(paths: list[Path], kind: str) -> None:
         else:
             seen[name] = path
 
+
 check_unique_names(agents, "agent")
 check_unique_names(skills, "skill")
 
@@ -83,6 +82,12 @@ required_files = [
     "README.md",
     ".claude/CLAUDE.md",
     "workflows/future-project-workflow.md",
+    "workflows/project-bootstrap.md",
+    "workflows/agile-agent-delivery.md",
+    "workflows/orchestration-contract.md",
+    "docs/orchestration-design.md",
+    "docs/agent-traceability.md",
+    "docs/verification-report.md",
     "standards/engineering-principles.md",
     "standards/security-principles.md",
     "standards/git-workflow.md",
@@ -95,15 +100,41 @@ required_files = [
     "templates/code-review-template.md",
     "templates/session-handover-template.md",
 ]
+
 for relative in required_files:
     if not (ROOT / relative).is_file():
         errors.append(f"Missing required file: {relative}")
+
+contract_path = ROOT / "workflows" / "orchestration-contract.md"
+if contract_path.is_file():
+    contract = contract_path.read_text(encoding="utf-8")
+    for marker in (
+        "Session-start / resume protocol",
+        "Task ownership and concurrency",
+        "Retry, failure and recovery",
+        "Quality and merge gate",
+        "Daily report evidence rules",
+        "human repository owner merges PRs",
+        "atomic exclusivity",
+    ):
+        if marker.casefold() not in contract.casefold():
+            errors.append(f"Orchestration contract missing required marker: {marker}")
+
+design_path = ROOT / "docs" / "orchestration-design.md"
+if design_path.is_file():
+    design = design_path.read_text(encoding="utf-8")
+    if "only after the user approves a real project" in design.casefold():
+        errors.append(
+            "Contradictory activation rule in docs/orchestration-design.md; "
+            "a clear build request must activate discovery immediately"
+        )
 
 print(f"Agents: {len(agents)}/{EXPECTED_AGENTS}")
 print(f"Skills: {len(skills)}/{EXPECTED_SKILLS}")
 print(f"Required files checked: {len(required_files)}")
 print("Frontmatter checks: name, description, delimiter, duplicate keys and duplicate names")
-print("Static-only validation: no Claude runtime, application, or tests invoked")
+print("Orchestration checks: required contract sections and selected activation contradiction")
+print("Static-only validation: no Claude runtime, lock service, application, or tests invoked")
 
 if errors:
     print("FAIL")
