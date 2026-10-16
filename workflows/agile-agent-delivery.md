@@ -1,57 +1,81 @@
 # Agile delivery workflow for Claude Code agents
 
-## Operating model
+## Operating model and accountability
 
-- GitHub Issues are the durable record for backlog items, acceptance criteria, decisions, blockers, and links to code.
-- GitHub Projects is the planning board for the two-week sprint. Keep status, priority, sprint iteration, estimate, and owner visible.
-- Claude Code runs specialist agents locally against a checked-out repository. Agents do not have a shared filesystem merely because they share a GitHub project.
+- The Product Owner owns product discovery, requirements, user stories, acceptance criteria, and backlog priority. The user who provides the initial idea is the project sponsor/supervisor, not the day-to-day Product Owner.
+- The Project Manager / Scrum Master is accountable for the delivery plan, task breakdown, dependencies, work in progress, follow-ups, status accuracy, risks, and daily report.
+- The main Claude Code session coordinates active work and remains accountable for integration and truthful reporting. A Project Manager subagent is a role invoked by the coordinator, not a continuously running background service.
+- GitHub Issues are the durable record for backlog items, acceptance criteria, decisions, blockers, delegation summaries, and links to code/evidence.
+- GitHub Projects is the planning board for the sprint. Keep status, priority, iteration, estimate, and owner visible when configured.
+- GitHub does not automatically know which local subagent was called, what it returned, or whether a local test ran unless that is recorded.
 - Every implementation task uses an isolated branch. Use a separate Git worktree per concurrently running coding agent where practical.
-- The AI Tech Lead reviews the actual diff and may submit an APPROVE or REQUEST_CHANGES review only after evaluating evidence.
-- The repository owner/user is the only person who performs the final merge. Agents must never merge PRs or configure automation to merge on the user's behalf.
+- The AI Tech Lead reviews actual diffs and evidence. The repository owner/user alone performs the final merge; agents must never merge PRs or configure automation to merge on the user's behalf.
+
+## End-to-end workflow from an idea
+
+1. **Activate project:** When the user gives an application idea and asks the team to build it, use workflows/project-bootstrap.md. Do not treat a vague brainstorming request as implementation authorization.
+2. **Discover and specify:** Product Owner and Business Analyst identify target users, problems, workflows, functional/non-functional requirements, risks, assumptions, and unresolved questions. Ask the user only for material decisions that cannot safely be inferred; document assumptions rather than blocking on routine details.
+3. **Design:** Architect compares viable architecture and technology options against the requirements, documents the recommendation and trade-offs, and creates ADRs for consequential decisions.
+4. **Prepare delivery:** Project Manager builds the prioritized backlog, dependencies, estimates, delivery slices, and sprint plan. QA contributes acceptance and test strategy early. DevOps proposes the required environments and CI/CD.
+5. **Set up the project:** Create repositories, project boards, cloud resources, paid services, permissions, or secrets only when the required target and authorization are clear. Never invent credentials or bypass missing access.
+6. **Implement incrementally:** Project Manager selects Ready work, delegates bounded tasks, tracks claims and dependencies, and follows up on stale or blocked work. Specialist agents create branches/PRs and report exact checks and evidence.
+7. **Verify and review:** QA and reviewers inspect evidence and actual diffs. Keep implemented, tested, merged, and deployed as separate states.
+8. **Report and resume:** Reconcile every delegation, update Issues/Project status and project-state summary, publish the daily report, and leave a session handover. On the next session, read durable state before starting new work.
+
+## User involvement
+
+The team should run routine planning and execution without requiring the user to assign every task or approve every sprint item. The Project Manager may continue with already-scoped, reversible work. Ask for user input only when:
+- a material product question has no safe, documented assumption;
+- requirements conflict or a business decision changes expected behavior;
+- an action would spend money, enable a paid service, change access/visibility, deploy to production, destroy data, or make an irreversible change;
+- an external repository/resource needs to be created and its owner, visibility, or authorization is not established;
+- the team is blocked and cannot resolve the issue within the approved scope.
+
+The user receives visibility and retains final PR merge authority. A request to build an application authorizes planning and routine implementation within available project/repository scope; it does not authorize paid services, production deployment, or other protected actions.
 
 ## Issue lifecycle
 
-Use these statuses (adapt GitHub Projects options if necessary):
-
 1. **Backlog** — captured, not committed to a sprint.
 2. **Ready** — clear acceptance criteria, test expectations, and dependencies identified.
-3. **In Progress** — one developer agent has claimed the task and is working in its own branch/worktree.
-4. **In Review** — a PR is open, linked to the issue, and the developer has supplied test evidence.
+3. **In Progress** — one primary implementation owner has claimed the task.
+4. **In Review** — a PR is open, linked to the issue, and evidence is supplied.
 5. **Changes Requested** — the Tech Lead found specific issues that need fixing.
-6. **Approved — Awaiting Human Merge** — Tech Lead approved the current PR revision and required checks pass.
+6. **Approved — Awaiting Human Merge** — Tech Lead approved the current revision and required checks pass.
 7. **Done** — the user merged the PR and the issue was verified/closed.
-8. **Blocked** — record the blocker, impact, attempted resolution, and decision/dependency needed.
+8. **Blocked** — blocker, impact, attempted resolution, and needed decision/dependency are recorded.
 
-Never mark an issue Done merely because a local implementation or approval exists. Never leave a blocked task silently In Progress.
+Never mark an issue Done merely because local implementation or approval exists. Never leave a blocked task silently In Progress.
 
-## Two-week sprint cadence
+## Project Manager daily operating loop
 
-### Before sprint start
-- Business Analyst clarifies the outcome, users, constraints, and acceptance criteria.
-- Project Manager splits work into reviewable issues and identifies dependencies and risks.
-- Tech Lead checks feasibility, boundaries, sequencing, and task size.
-- The human owner approves the sprint goal and scope. Do not silently start a new sprint or add major scope.
-- Split oversized stories into tasks that can be reviewed independently.
+At the start of each active session:
+1. Read the project status summary, latest handover, active sprint, open Issues, open PRs, recent CI results, unresolved review comments, blockers, and pending user decisions.
+2. Reconcile these sources; do not assume yesterday's conversation is the only source of truth.
+3. Select the next highest-priority Ready work based on sprint goal, dependencies, risk, and work-in-progress limits.
+4. Delegate bounded tasks with unique delegation IDs, clear deliverables, acceptance checks, and file ownership.
+5. Follow up on outputs, inspect evidence, request fixes when necessary, and update durable records.
 
-### During the sprint
-- Agents claim only Ready tasks and check for existing ownership before starting.
-- Limit work in progress; finish/review existing work before claiming more when practical.
-- Each task has one primary implementation owner. Specialist agents can advise, but avoid multiple agents editing the same files.
-- If criteria are ambiguous, dependencies are missing, or scope must change, stop and ask rather than inventing product decisions.
-- Post concise progress and blockers to the GitHub issue. Update status when work moves stages.
-- New ideas go to the backlog as proposals; they do not automatically enter the active sprint.
+Before ending a session:
+1. Reconcile every delegation ID to a state: completed, partial, in progress, blocked, failed, cancelled, or rejected.
+2. Link outputs to Issues, PRs/commits, ADRs, CI/test evidence, or follow-up tasks.
+3. Update issue/project statuses and the current project-state summary.
+4. Publish the daily report using templates/daily-project-report-template.md.
+5. Update templates/session-handover-template.md or a project-specific equivalent with the next 1–3 actions.
+6. Clearly identify PRs awaiting the user. Never merge them.
 
-### Sprint end
-- Review merged and unmerged work against the sprint goal.
-- Keep incomplete work open and return it to the backlog or plan it explicitly for the next sprint.
-- Record outcomes, blockers, follow-up issues, and a short retrospective.
-- Never call work complete when checks were not run or the user has not merged the PR.
+## Delegation and traceability rules
+
+Follow docs/agent-traceability.md. Assign IDs such as TASK-142-D01 for each subagent assignment. Record objective, input/context, expected output, acceptance checks, file ownership, status, reported outcome, coordinator disposition, evidence, and next action. Record meaningful state changes rather than every internal step. A subagent saying "done" is not proof of integration, correctness, or passing tests.
+
+## Sprint cadence
+
+The Project Manager owns routine sprint planning and tracking. The Product Owner maintains product priorities; the Tech Lead checks technical feasibility; QA plans verification. Record sprint goals and changes in GitHub. Do not block routine, already-scoped work on repeated user approvals. At sprint end, report merged outcomes separately from open PRs and unfinished work.
 
 ## Task claiming and local execution
 
 Before coding, the developer agent must:
 1. Read the issue, acceptance criteria, linked decisions, repo instructions, and relevant implementation.
-2. Confirm the issue is Ready, dependencies are met, and no other agent owns the implementation.
+2. Confirm the issue is Ready, dependencies are met, and no other agent owns implementation.
 3. State a short plan and expected files/checks.
 4. Create a branch named feat/<issue-number>-<short-name>, fix/<issue-number>-<short-name>, or chore/<issue-number>-<short-name>.
 5. If another agent is using the same checkout, use a separate worktree or wait. Never concurrently edit the same working tree.
@@ -59,20 +83,14 @@ Before coding, the developer agent must:
 7. Run relevant tests, lint, type checks, and static validation available locally. Report exact commands and results; never fabricate checks.
 8. Commit and push the branch, then open a PR linked to the issue. If a required check cannot run, disclose why and mark it as not run.
 
-Example worktree pattern (adapt paths and branch to the actual issue):
-    git fetch origin
-    git worktree add ../work-issue-123 -b feat/123-short-name origin/main
-    cd ../work-issue-123
-
-A GitHub issue is not automatically assigned to an AI agent by GitHub itself. Task claiming is a coordination protocol implemented by the orchestrator and issue/status updates; use a lock/claim mechanism if parallel orchestration is added.
+Task claiming is a coordination protocol implemented by the main session and issue/status updates; a GitHub Issue alone does not lock an agent.
 
 ## Pull request readiness checklist
 
-The developer may move a task to In Review only when:
 - [ ] PR title is clear and issue is linked.
-- [ ] Scope matches the approved issue; unrelated changes are excluded.
+- [ ] Scope matches the task; unrelated changes are excluded.
 - [ ] Acceptance criteria are mapped to implementation and evidence.
-- [ ] Relevant tests were added/updated and actual test commands/results are reported.
+- [ ] Relevant tests were added/updated and actual commands/results are reported.
 - [ ] Relevant lint/build/type checks were run or explicitly marked not run with reason.
 - [ ] Security, secrets, permissions, data handling, and error handling were considered.
 - [ ] Documentation/configuration/migration changes are included when needed.
@@ -82,32 +100,12 @@ The developer may move a task to In Review only when:
 
 ## AI Tech Lead review protocol
 
-The Tech Lead must review the current PR diff, not merely the developer summary. Verify correctness, acceptance criteria, architecture, test quality, security/privacy, dependency changes, maintainability, CI status, evidence, and unresolved review threads.
-
-If changes are needed, submit REQUEST_CHANGES with actionable findings, severity, affected file/line when available, and expected resolution. Do not approve a PR with unresolved blocking defects or failing required checks.
-
-If the current revision is acceptable, submit APPROVE with a concise evidence-based review. Then set the project status to **Approved — Awaiting Human Merge** if the integration supports it. Approval is not a merge command or authorization to merge. The user reviews the PR and performs the merge manually.
-
-If the GitHub account/token used by an agent cannot create formal reviews, post a clearly labelled review report/comment and do not claim GitHub recorded a formal approval. Never impersonate the human repository owner.
+Review the current PR diff, not merely the developer summary. Verify correctness, acceptance criteria, architecture, test quality, security/privacy, dependency changes, maintainability, CI status, evidence, and unresolved review threads. If changes are needed, request changes with actionable findings, severity, affected file/line, and expected resolution. Approve only when the current revision is acceptable and evidence supports it. If formal GitHub reviews are unavailable, label the report as a comment and do not claim a formal approval. Approval is not merge authorization.
 
 ## Framework and architecture improvement proposals
 
-Any agent may propose a framework, tool, architecture, or workflow improvement. Proposals are backlog items, not permission to change shared standards.
-
-A proposal must explain:
-- current problem and concrete evidence;
-- expected benefit and how it will be measured;
-- proposed change and a reasonable alternative, including doing nothing;
-- compatibility, security, maintenance, migration, cost/token, and rollback risks;
-- affected agents, skills, templates, standards, applications, and CI;
-- proof-of-concept scope and success/failure criteria.
-
-The Tech Lead evaluates the proposal and recommends accept, reject, or request-more-evidence. Record accepted consequential decisions as an Architecture Decision Record (ADR). The human owner approves major architecture changes, new paid services/spending, security/permission changes, and irreversible actions. Only then may implementation tickets be added to a sprint.
+Proposals must explain the current problem and evidence, expected benefit/measurement, alternatives including doing nothing, compatibility/security/maintenance/migration/cost/token/rollback risks, affected artifacts, and proof-of-concept success criteria. Record consequential accepted decisions as ADRs. Seek user approval for material risk/cost/access changes; do not turn speculative improvements into sprint work automatically.
 
 ## Automation boundaries
 
-Safe candidates for automation: linting and static validation, status/label updates based on explicit events, sprint summaries, and notifications that a PR is ready for review.
-
-Human-controlled actions: final merge, production deployment, destructive or irreversible operations, granting permissions or exposing secrets, spending money/enabling paid services, and high-impact architectural changes.
-
-A green CI check is evidence for review, not a substitute for review. A Tech Lead approval is a recommendation to the human owner, not a merge trigger.
+Safe candidates: static validation, explicit status updates, sprint summaries, and PR-ready notifications. Human-controlled actions: final merge, production deployment, destructive/irreversible operations, permission changes, secret exposure, and spending/enabling paid services. CI and Tech Lead review support the user's decision; neither replaces it.
