@@ -1,47 +1,114 @@
 #!/usr/bin/env python3
-"""Static validator for the reusable Claude Code AI team starter kit.
+"""Static validation for the reusable Claude Code AI team starter kit.
 
-Checks expected agent and skill counts, required files, and basic frontmatter.
+Checks expected agent/skill counts, required files, and basic frontmatter.
 Does not start Claude Code, create an application, or execute application tests.
 """
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_AGENTS = 12
 EXPECTED_SKILLS = 18
 errors = []
+
 agents = sorted((ROOT / ".claude" / "agents").glob("*.md"))
 skills = sorted((ROOT / ".claude" / "skills").glob("*/SKILL.md"))
+
 if len(agents) != EXPECTED_AGENTS:
     errors.append(f"Expected {EXPECTED_AGENTS} agent files, found {len(agents)}")
 if len(skills) != EXPECTED_SKILLS:
     errors.append(f"Expected {EXPECTED_SKILLS} skill files, found {len(skills)}")
-for p in agents + skills:
-    text = p.read_text(encoding="utf-8")
-    if not text.startswith("---\n") or "\n---\n" not in text[4:]:
-        errors.append(f"Missing or malformed frontmatter: {p.relative_to(ROOT)}")
-    elif "name:" not in text.split("\n---\n", 1)[0]:
-        errors.append(f"Missing name in frontmatter: {p.relative_to(ROOT)}")
-required = [
-    "README.md", ".claude/CLAUDE.md", "workflows/future-project-workflow.md",
-    "standards/engineering-principles.md", "standards/security-principles.md",
-    "standards/git-workflow.md", "standards/definition-of-done.md",
-    "templates/requirements-template.md", "templates/user-story-template.md",
-    "templates/architecture-decision-template.md", "templates/sprint-plan-template.md",
-    "templates/test-plan-template.md", "templates/code-review-template.md",
+
+def parse_frontmatter(path: Path) -> dict[str, str]:
+    """Parse the simple key: value fields required by this starter kit."""
+    relative = path.relative_to(ROOT)
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        errors.append(f"Cannot read {relative}: {exc}")
+        return {}
+
+    if not text.startswith("---\n"):
+        errors.append(f"Frontmatter must start with ---: {relative}")
+        return {}
+    match = re.search(r"\n---\s*(?:\n|$)", text[4:])
+    if not match:
+        errors.append(f"Frontmatter closing delimiter missing: {relative}")
+        return {}
+
+    block = text[4:4 + match.start()]
+    fields: dict[str, str] = {}
+    for line_number, line in enumerate(block.splitlines(), start=2):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if ":" not in line:
+            errors.append(f"Invalid frontmatter line {line_number} in {relative}")
+            continue
+        key, value = line.split(":", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if not key:
+            errors.append(f"Empty frontmatter key at line {line_number} in {relative}")
+            continue
+        if key in fields:
+            errors.append(f"Duplicate frontmatter key '{key}' in {relative}")
+        fields[key] = value
+
+    for required in ("name", "description"):
+        if not fields.get(required, "").strip():
+            errors.append(f"Missing or empty '{required}' in {relative}")
+    return fields
+
+def check_unique_names(paths: list[Path], kind: str) -> None:
+    seen: dict[str, Path] = {}
+    for path in paths:
+        fields = parse_frontmatter(path)
+        name = fields.get("name", "").strip()
+        if not name:
+            continue
+        if name in seen:
+            errors.append(
+                f"Duplicate {kind} name '{name}': "
+                f"{seen[name].relative_to(ROOT)} and {path.relative_to(ROOT)}"
+            )
+        else:
+            seen[name] = path
+
+check_unique_names(agents, "agent")
+check_unique_names(skills, "skill")
+
+required_files = [
+    "README.md",
+    ".claude/CLAUDE.md",
+    "workflows/future-project-workflow.md",
+    "standards/engineering-principles.md",
+    "standards/security-principles.md",
+    "standards/git-workflow.md",
+    "standards/definition-of-done.md",
+    "templates/requirements-template.md",
+    "templates/user-story-template.md",
+    "templates/architecture-decision-template.md",
+    "templates/sprint-plan-template.md",
+    "templates/test-plan-template.md",
+    "templates/code-review-template.md",
     "templates/session-handover-template.md",
 ]
-for rel in required:
-    if not (ROOT / rel).is_file():
-        errors.append(f"Missing required file: {rel}")
+for relative in required_files:
+    if not (ROOT / relative).is_file():
+        errors.append(f"Missing required file: {relative}")
+
 print(f"Agents: {len(agents)}/{EXPECTED_AGENTS}")
 print(f"Skills: {len(skills)}/{EXPECTED_SKILLS}")
-print("Required templates and standards: checked")
+print(f"Required files checked: {len(required_files)}")
+print("Frontmatter checks: name, description, delimiter, duplicate keys and duplicate names")
 print("Static-only validation: no Claude runtime, application, or tests invoked")
+
 if errors:
     print("FAIL")
     for error in errors:
         print(f"- {error}")
     sys.exit(1)
+
 print("PASS")
