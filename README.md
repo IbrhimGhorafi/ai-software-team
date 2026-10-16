@@ -11,7 +11,7 @@ A reusable, project-independent starter kit for coordinating AI-assisted softwar
 | Shared instructions | `.claude/CLAUDE.md` |
 | Standards | Engineering, security, Git workflow, and definition of done |
 | Templates | Requirements, stories, sprint plans, architecture decisions, test plans, code reviews, and handovers |
-| Workflow and docs | Future-project workflow, setup guidance, capabilities, and verification notes |
+| Workflow and docs | Future-project workflow, two-week Agile agent delivery, GitHub Projects setup, capabilities, and verification notes |
 | Validation | A dependency-free Python static validator and GitHub Actions workflow |
 
 ## Prerequisites
@@ -31,6 +31,10 @@ A reusable, project-independent starter kit for coordinating AI-assisted softwar
 
 3. Start Claude Code from this directory.
 4. Ask Claude Code to inspect the team configuration only, report which agents and skills it discovers, and identify version-specific issues. Do not authorize application creation unless you are ready to start a separate project.
+
+## Agile workflow for future projects
+
+For implementation projects, use [the Agile agent delivery workflow](workflows/agile-agent-delivery.md) and [GitHub Projects setup guide](docs/github-projects-setup.md). The default sprint is two weeks. Track backlog and sprint work in GitHub Issues/Projects, execute Claude Code agents locally on isolated branches/worktrees, and require an AI Tech Lead review before the repository owner performs the final merge. Use the [technical proposal template](templates/technical-proposal-template.md) for framework/architecture ideas and the [pull request template](templates/pull-request-template.md) to report validation evidence. GitHub Projects does not coordinate local agents by itself; parallel task claiming requires a local coordinator or an explicit claim protocol.
 
 ## Important distinction: static checks vs runtime verification
 
