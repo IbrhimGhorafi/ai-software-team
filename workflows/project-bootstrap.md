@@ -1,82 +1,65 @@
 # Project Bootstrap Workflow
 
 ## Purpose and scope
+Use this workflow when the user provides a software idea and asks the team to build it. The team—not the user—owns discovery, specification, backlog preparation, architecture analysis, task decomposition, and routine delivery planning. The user is the project sponsor/supervisor: they follow progress and retain final PR merge authority. This workflow applies to future application projects, not changes to this reusable AI team starter kit.
 
-Use this workflow when the human owner presents a new software idea and asks the team to prepare it for delivery. It prepares a proposal and, after explicit approval, initializes the agreed project repositories. It does not authorize application implementation by itself.
+## Workflow gates
 
-This workflow applies to future application projects, not changes to this reusable AI team starter kit.
-
-## Non-negotiable gates
-
-- **Gate 0 — Activation:** Confirm the user wants to start a real project. If they are only brainstorming or improving this starter kit, do not create application repositories or code.
-- **Gate 1 — Discovery:** Clarify the problem, users, outcomes, in-scope and out-of-scope features, constraints, budget, hosting, security/privacy needs, integrations, and acceptance criteria. Mark assumptions and open questions clearly.
-- **Gate 2 — Technical options:** The Software Architect leads a comparison of viable system shapes: monorepo vs multi-repo, modular monolith vs microservices, and relevant technology options. Do not assume microservices or a framework by default.
-- **Gate 3 — Proposal:** Prepare a project brief, architecture proposal, repository topology plan, initial delivery slices, risks, and estimated operating/tooling costs. Include a reasonable simpler alternative and explain trade-offs.
-- **Gate 4 — Human approval:** Stop and ask the human owner to approve the project scope, architecture direction, repository plan, initial stack, budget/costs, and whether remote repositories may be created. Silence is not approval.
-- **Gate 5 — Repository setup:** Only after approval, the DevOps/Repository Setup responsibility may create the approved repositories and scaffolding, provided the available GitHub credentials and permissions support the action. Otherwise provide exact manual steps and continue only within authorized local scope.
-- **Gate 6 — Bootstrap verification:** Verify repository names, default branch, initial structure, README/setup instructions, license choice if requested, security settings requested by the owner, CI baseline, and links between repositories. Report checks actually performed and any settings that could not be verified.
-- **Gate 7 — Sprint planning:** The Project Manager turns approved requirements into prioritized issues, dependencies, acceptance checks, and a proposed two-week sprint. The human owner approves the sprint goal and scope before implementation begins.
-- **Gate 8 — Implementation authorization:** Developer agents start only on approved, Ready issues. Follow `workflows/agile-agent-delivery.md`; use isolated branches/worktrees and PRs. The human owner performs every final merge.
+- **Gate 0 — Activation:** A clear request such as "build an e-commerce site" activates the workflow; do not demand that the user write a complete project brief.
+- **Gate 1 — Discovery and specification:** Product Owner and Business Analyst derive the product brief, user personas/journeys, functional and non-functional requirements, scope boundaries, assumptions, risks, acceptance criteria, and unresolved questions. Ask the user only for material decisions that cannot safely be inferred. Record assumptions explicitly.
+- **Gate 2 — Architecture options:** Software Architect compares reasonable stack and system-shape options, including monorepo/multi-repo and modular monolith/microservices where relevant. Recommend the simplest architecture that meets the requirements; include trade-offs, operational burden, security, cost, and alternatives. Do not assume microservices or a framework by default.
+- **Gate 3 — Backlog and delivery plan:** Project Manager converts the specification into prioritized epics/stories/tasks, dependencies, estimates, verification criteria, and proposed sprint slices. QA creates an initial test strategy; DevOps plans the development workflow and CI/CD. The Project Manager owns routine planning and sequencing so the user does not need to manage tasks.
+- **Gate 4 — Sponsor decision checkpoint:** Present a concise baseline plan and highlight only decisions that materially affect product direction, costs, security/privacy, access, external commitments, or irreversible choices. Routine product/technical choices may proceed as documented recommendations and assumptions. Do not treat silence as authorization for paid services, production deployment, destructive actions, permission changes, or external repository creation where target/visibility/access are unclear.
+- **Gate 5 — Project setup:** Once repository target and permissions are established, DevOps may scaffold the approved project and CI baseline. If remote repository creation or cloud resources require missing authorization or credentials, give exact steps and continue with safe work that is already authorized; do not fabricate access or bypass permissions.
+- **Gate 6 — Bootstrap verification:** Verify repository structure, setup instructions, CI baseline, test commands, and available permissions. Report actual checks and limitations.
+- **Gate 7 — Begin delivery:** Project Manager initializes backlog/sprint records and starts bounded, Ready tasks. Do not ask the user to approve every task or routine sprint item. Follow workflows/agile-agent-delivery.md; use isolated branches/worktrees and PRs. The human owner performs every final merge.
 
 ## Role ownership
 
-- **Product Owner / Business Analyst:** clarify user value, requirements, boundaries, acceptance criteria, and unresolved product decisions.
-- **Software Architect:** compare architecture and repository options; define service boundaries, API contracts, key quality attributes, and proposed ADRs.
-- **Project Manager:** sequence work, identify dependencies/risks, and prepare a sprint proposal; do not silently commit the owner to scope.
-- **DevOps / Repository Setup:** translate the approved repository plan into repository scaffolding, CI, developer setup, and operational baseline. Do not create unapproved remote resources or incur costs.
-- **Backend / Frontend / Database agents:** advise on feasibility during planning when requested; do not start product implementation before the implementation gate.
-- **QA Automation:** prepare risk-based test strategy and acceptance verification early; do not report tests as run until evidence exists.
-- **Code Review / Security:** assess design and changes against quality and security requirements.
-- **Human owner:** approves material decisions, remote repository creation, scope, costs, sprint commitment, security/permission changes, production deployment, and final merges.
+- **Product Owner / Business Analyst:** own product discovery, requirements, assumptions, acceptance criteria, and backlog readiness.
+- **Software Architect / Tech Lead:** evaluate architecture and repository options, define boundaries/API contracts, record ADRs, and guide technical quality.
+- **Project Manager / Scrum Master:** sequence work, manage dependencies and work in progress, delegate and follow up, update task state, and publish daily reports.
+- **DevOps / Repository Setup:** scaffold the approved environment, CI, developer setup, and operational baseline; do not create unapproved external resources or incur costs.
+- **Backend / Frontend / Database agents:** implement bounded slices after requirements and acceptance criteria are ready.
+- **QA Automation:** prepare risk-based test strategy early and verify changes with actual evidence.
+- **Code Review / Security:** assess designs and diffs against quality and security requirements.
+- **User / sponsor:** supplies the idea and essential business constraints, monitors progress, answers escalated material decisions, and performs final PR merges.
 
-The repository setup responsibility may remain part of the existing DevOps agent; a separate agent is not required unless actual workload or orchestration complexity justifies it.
+## Architecture decision checklist
 
-## Repository topology decision checklist
+Evaluate functional and non-functional requirements, release/deployment boundaries, shared code/versioning, local development and integration-test complexity, CI/CD maintenance, permissions/secrets/privacy, operating costs/observability/resilience, scale, and operational maturity.
 
-Before recommending one or multiple repositories, evaluate:
+Default to the simplest architecture that meets confirmed requirements. Microservices require concrete justification and documented service boundaries, communication, data ownership, observability, failure handling, local development, and testing.
 
-- independent release/deployment needs;
-- service ownership and team boundaries;
-- shared code and versioning strategy;
-- local development and integration-test complexity;
-- CI/CD duplication and maintenance;
-- permissions, secrets, and access boundaries;
-- deployment/runtime costs and observability;
-- expected scale and operational maturity.
+## Required bootstrap deliverables
 
-Default to the simplest architecture that meets confirmed requirements. Microservices require a concrete justification and an explicit description of service boundaries, communication, data ownership, observability, failure handling, local development, and testing.
-
-## Required deliverables before approval
-
-1. Project brief and requirements summary.
+1. Product brief and requirements summary.
 2. Confirmed facts, assumptions, open questions, and out-of-scope items.
-3. Architecture options comparison with recommendation and trade-offs.
-4. Proposed repository plan using `templates/repository-plan-template.md`.
-5. Proposed technology stack with alternatives and source-backed rationale where research is needed.
-6. Security/privacy risks, operational requirements, cost assumptions, and major dependencies.
-7. Initial delivery slices and proposed first sprint goal.
-8. Explicit list of decisions requiring human approval.
-
-Do not create a remote repository plan that assumes the user has approved a GitHub organization, visibility, licensing, paid services, cloud resources, or access permissions.
+3. User journeys, user stories, acceptance criteria, and requirements-to-test traceability.
+4. Architecture/stack comparison with recommendation and trade-offs.
+5. Repository/environment plan using templates/repository-plan-template.md where applicable.
+6. Security/privacy risks, operational needs, cost assumptions, and dependencies.
+7. Prioritized backlog and proposed first delivery slices.
+8. Initial QA strategy and CI/CD plan.
+9. Concise sponsor checkpoint listing only decisions that genuinely need human input.
 
 ## Repository setup execution checklist
 
-After approval, the setup owner must:
-
-1. Reconfirm the approved plan and target owner/organization.
-2. Check whether each repository already exists to avoid accidental duplicates.
-3. Create only the approved repositories and use the approved visibility.
+When target and permissions are available:
+1. Reconfirm target owner/organization and intended visibility.
+2. Check whether each repository already exists to avoid duplicates.
+3. Create only resources within explicit authorization and permissions.
 4. Use the agreed default branch and baseline files.
-5. Add only approved collaborators, permissions, integrations, and secrets references; never print or commit secret values.
+5. Add only approved collaborators, permissions, integrations, and secret references; never print or commit secret values.
 6. Add baseline CI/static checks and setup documentation appropriate to the selected stack.
 7. Keep implementation work on feature branches and open PRs for code/configuration changes where supported.
 8. Record exact repository URLs, initial commit/branch, setup steps, checks run, limitations, and manual actions needed.
-9. Stop if permissions, visibility, costs, or an irreversible choice differs from the approved plan.
+9. Stop if permissions, visibility, costs, or an irreversible choice differs from authorization.
 
-## Failure and pause rules
+## Pause and escalation rules
 
-Pause and ask the human owner if requirements materially conflict, an architecture choice changes cost or risk, a repository is unexpectedly present, required permissions are unavailable, credentials are missing, or the proposed setup exceeds approved scope. Never work around missing permissions by weakening security.
+Pause and ask the sponsor only when requirements materially conflict, an important product decision cannot be inferred, an architecture choice changes cost/risk significantly, a repository/resource is unexpectedly present, credentials/permissions are missing, or the next action exceeds authorized scope. Explain evidence, impact, options, recommendation, and exact decision needed.
 
 ## Completion definition
 
-Bootstrap is complete only when the approved repository structure exists (or the remaining manual steps are clearly documented), setup instructions are available, the agreed baseline checks have actual recorded results, and the owner has received the repository links, risks, and next decision. It does not mean the application itself is implemented.
+Bootstrap is complete when the specification and assumptions are documented, architecture and repository decisions are recorded, a prioritized backlog and verification plan exist, setup is verified to the extent available, and the Project Manager has established durable tracking and the first delivery plan. It does not mean the application itself is implemented.
