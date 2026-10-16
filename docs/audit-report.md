@@ -1,52 +1,47 @@
 # AI Software Team Audit
 
 - Audit date: 2026-10-16
-- Scope: repository files on `main` after the Agile workflow PR was merged, based on remotely readable GitHub contents.
-- Important limitation: this is a repository/configuration audit. It is not proof of Claude Code runtime discovery, local delegation, or actual task execution.
+- Scope: remotely readable repository contents and GitHub metadata available to the audit.
+- Limitation: no Claude Code runtime session was launched. This report does not claim real agent delegation, application execution, or application tests.
 
-## Executive summary
+## Verified repository observations
 
-The starter kit has a useful foundation: 12 agent profile files, 18 skill files, shared instructions, reusable templates, a future-project workflow, an Agile delivery workflow, a static validator, and a GitHub Actions workflow.
+- `main` exists and the GitHub branches response reported `protected: false` for it.
+- The GitHub rulesets endpoint returned an empty list.
+- There were no open pull requests at audit time.
+- Agent and skill definitions, static validator, and GitHub Actions static-validation workflow exist.
+- Orchestration, task ownership, traceability, human-merge policy and daily-report templates are primarily instruction/documentation-level protocols; they are not a continuously running orchestrator or atomic lock implementation.
+- The repository has no demonstrated end-to-end Claude Code runtime verification in this audit.
 
-The main gap identified for the requested use case was that project discovery and architecture planning were described, but the handoff from an approved idea to an explicit repository topology plan and gated repository creation was not sufficiently operationalized. The existing DevOps role can own repository setup without introducing a new agent immediately.
+## Findings and disposition
 
-## Findings
+| Finding | Risk | Change in this PR | Remaining external/ runtime work |
+|---|---|---|---|
+| Conflicting orchestration entry points | A session may follow different activation/approval rules | Unified entry point and added explicit state machine/precedence | Runtime smoke test in Claude Code |
+| No operational recovery contract | Duplicate work, stale claims, endless retries, poor handover | Added task ownership, stale-claim, retry, failure and resume protocol | Implement atomic locking only if multi-session parallelism is required |
+| Templates/progress can be mistaken for evidence | Daily report may overstate done/tested/merged/deployed | Added evidence and status rules; static validator checks key contract presence | Verify behavior with real session and actual CI/PR data |
+| Static validator is too narrow | Missing orchestration docs/contradictions could pass | Extend static checks for required orchestration contract and contradictory instructions | Static checks still cannot validate model behavior |
+| Human-only merge was policy, not enforcement | A token/agent with sufficient permissions could merge or push | Clearly state policy/enforcement gap in docs and report | Configure and verify GitHub rulesets/permissions manually; current metadata showed main unprotected and no rulesets |
+| GitHub Projects setup is manual | Board/status automation may not exist | Clarified no board/lock/runtime is implied by setup docs | Create/configure a board only if desired and authorized |
 
-| Area | Evidence in repository | Assessment |
-|---|---|---|
-| Agent/skill inventory | `.claude/agents/` and `.claude/skills/`; README and capability note report 12 agents and 18 skills | Present as files; runtime discovery still unverified |
-| Project activation gate | `workflows/future-project-workflow.md`, `.claude/CLAUDE.md` | Present; keep separate from team-kit maintenance |
-| Requirements and architecture | Business Analyst, Product Owner, Software Architect profiles; ADR and requirements templates | Present; proposal-to-repository setup handoff needed more detail |
-| Agile execution | `workflows/agile-agent-delivery.md`, GitHub Projects setup guide | Documented; no evidence in these files that a real board or local orchestrator has been configured |
-| Task claiming and parallelism | Agile workflow documents claim protocol and worktree isolation | Protocol is documented; no local coordinator/lock implementation is evidenced by documentation alone |
-| Repository creation responsibility | DevOps profile covers CI/CD, containers, infrastructure and operational workflows | Repository scaffolding responsibility was not explicit enough; clarified in this change |
-| Bootstrap approval | Existing workflow requires human scope approval and approval for costs/irreversible actions | Added explicit gates for topology, remote repo creation, visibility, baseline setup and sprint start |
-| Static validation | `scripts/validate_team.py`, `.github/workflows/validate-team.yml` | Static checks are available; they do not validate runtime behavior |
-| Runtime verification | `docs/verification-report.md` is a blank template | Not yet verified; requires running Claude Code in an installed local environment |
-| Merge safety | Shared instructions and Agile workflow reserve final merge for the human owner | Policy documented; repository rulesets/branch protection and permissions were not verified in this audit |
+## Verification performed for this audit
 
-## Changes in this audit PR
+- GitHub repository tree and key files fetched successfully.
+- GitHub branches metadata returned `main.protected=false`.
+- GitHub rulesets metadata returned an empty list.
+- Open pull request list returned empty.
+- No local Python execution, GitHub Actions run, Claude Code launch, application test, or end-to-end delegation was performed during this audit PR.
 
-- Added `workflows/project-bootstrap.md` to define explicit gates from idea discovery through repository setup and sprint authorization.
-- Added `templates/repository-plan-template.md` for architecture options, repository topology, stack trade-offs, security/costs and approval recording.
-- Clarified the DevOps agent's repository setup responsibilities and its approval/permission boundaries.
-- Linked the bootstrap workflow from the future-project workflow and README.
-- Added a report separating file-level evidence from unverified runtime and repository settings.
+## What this PR improves
 
-## Verification status
+- A single orchestration contract with phases, canonical evidence precedence, session start/resume, task ownership, retry/recovery, merge gate and daily-report evidence rules.
+- A single orchestration design entry point and activation rule.
+- Static validation that guards critical workflow files and detects selected contradictory language.
 
-- Remote GitHub file contents and repository tree were inspected.
-- GitHub Actions history was inspected for visible workflow-run evidence; results must be interpreted against the relevant commit/PR rather than treated as proof of Claude runtime behavior.
-- The Python validator was **not run in a local checkout as part of this audit**.
-- Claude Code agent/skill discovery and real delegation were **not run or verified**.
-- GitHub Project board configuration, branch protection/rulesets, and actual permissions preventing direct pushes or merges were **not verified**.
-- Repository creation against a future project was **not attempted**; no application repositories were created by this audit.
+## Remaining blockers to call this team production-ready
 
-## Recommended next manual verification
-
-1. Clone the merged repository and run `python scripts/validate_team.py`.
-2. Open Claude Code at the repository root and ask it to list the agents and skills it actually discovers, with version and any warnings recorded in `docs/verification-report.md`.
-3. Ask Claude Code to perform a harmless, bounded test delegation that reads files only; record observable evidence and permission constraints.
-4. Confirm GitHub Project fields/views are configured if you intend to use them for a real project.
-5. Review branch protection/rulesets and repository permissions manually; do not infer them from written policy.
-6. Exercise the project bootstrap workflow on a sample idea in planning-only mode first. Do not create remote repositories until the plan is explicitly approved.
+1. Merge this PR only after human review; the assistant will not merge it.
+2. Run `python scripts/validate_team.py` locally or rely on the PR CI result after it actually completes.
+3. In Claude Code, run a controlled smoke test: discover profiles/skills, perform a read-only discovery task, delegate one bounded documentation task, reconcile evidence, and generate a report.
+4. Configure a GitHub ruleset/branch protection so only authorized humans can merge and required checks cannot be bypassed; verify permissions.
+5. If autonomous work while Claude Code is closed is required, deploy and test an external scheduler/runner separately. This repository alone does not provide that behavior.
