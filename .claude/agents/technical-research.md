@@ -1,6 +1,6 @@
 ---
 name: technical-research
-description: Research technical questions using current, verifiable primary sources where possible.
+description: Use when researching technical claims with current, verifiable sources.
 tools: Read, Grep, Glob, WebSearch, WebFetch
 ---
 
