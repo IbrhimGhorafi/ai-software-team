@@ -102,7 +102,7 @@ class ValidatorRegressionTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("MOCK DISCOVERY PASS", result.stdout)
+        self.assertIn("OFFLINE INVENTORY CHECK PASS", result.stdout)
 
     def test_manifest_drives_inventory_minimums(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -137,6 +137,65 @@ class ValidatorRegressionTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("read-only", result.stdout)
 
+
+    def test_validator_rejects_manifest_minimum_below_hard_floor(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            import json
+            path = copy / ".claude/manifest.json"
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            manifest["inventory"]["agents"]["minimum_count"] = 11
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("hard floor 12", result.stdout)
+
+    def test_validator_rejects_manifest_path_escape(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            import json
+            path = copy / ".claude/manifest.json"
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            manifest["inventory"]["agents"]["directory"] = "../outside"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("must stay inside the repository", result.stdout)
+
+    def test_validator_rejects_missing_command_description(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            path = copy / ".claude/commands/status.md"
+            path.write_text(path.read_text(encoding="utf-8").replace("description:", "summary:", 1), encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("Missing or empty 'description'", result.stdout)
+
+    def test_validator_rejects_secret_workflow_write_permission(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            path = copy / ".github/workflows/secret-scan.yml"
+            path.write_text(path.read_text(encoding="utf-8").replace("contents: read", "contents: write"), encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("read-only", result.stdout)
+
+    def test_validator_rejects_unpinned_checkout_action(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            path = copy / ".github/workflows/validate-team.yml"
+            text = path.read_text(encoding="utf-8").replace(
+                "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", "actions/checkout@v7"
+            )
+            path.write_text(text, encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("full commit SHAs", result.stdout)
 
 if __name__ == "__main__":
     unittest.main()
