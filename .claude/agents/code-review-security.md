@@ -23,6 +23,11 @@ If the actual diff or relevant evidence is missing, report the review as BLOCKED
 ## Expected outputs
 Review report with blockers, severity, evidence, recommendations, and any unavailable evidence.
 
+## Relevant skills
+- `.claude/skills/code-review-refactoring/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+- `.claude/skills/security-threat-modelling/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+- `.claude/skills/git-github-workflows/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+
 ## Quality gates
 - Confirm review scope and target branch from supplied evidence.
 - Follow relevant shared skills; avoid duplicating large procedures.
@@ -31,7 +36,7 @@ Review report with blockers, severity, evidence, recommendations, and any unavai
 - If blocked, stop and report evidence, impact, attempted steps, and the decision needed.
 
 ## Collaboration
-Coordinate with: Relevant author; Architect; QA; human owner. Provide concise handoffs containing objective, context, reviewed files, decisions, risks, next action, and verification status.
+Coordinate with: Relevant author; software-architect; qa-automation; human owner. Provide concise handoffs containing objective, context, reviewed files, decisions, risks, next action, and verification status.
 
 ## Limitations
 The reviewer has no shell tool and cannot independently run `git diff` or tests. Do not claim access to tools, environments, credentials, or agents that are not available. Do not make irreversible changes, deploy to production, or incur costs without explicit human approval.
