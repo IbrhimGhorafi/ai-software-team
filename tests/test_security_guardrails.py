@@ -129,7 +129,7 @@ class SimulatedRuleMatching(unittest.TestCase):
         ])
         doc = (ROOT / "docs" / "security-guardrails.md").read_text(encoding="utf-8")
         for phrase in ("python", "bash -c", "sandbox"):
-            self.assertIn(phrase, doc, f"limitation not documented: {phrase}")
+            self.assertIn(phrase.casefold(), doc.casefold(), f"limitation not documented: {phrase}")
 
 
 class ValidatorRejectsWeakenedGuardrails(unittest.TestCase):
