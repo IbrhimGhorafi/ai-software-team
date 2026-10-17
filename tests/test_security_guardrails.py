@@ -101,7 +101,8 @@ class SimulatedRuleMatching(unittest.TestCase):
         protected_paths = [
             "./.claude/settings.json", "./.github/workflows/validate-team.yml",
             "./.github/workflows/secret-scan.yml", "./.github/CODEOWNERS",
-            "./.github/dependabot.yml",
+            "./.github/dependabot.yml", "./.claude/CLAUDE.md",
+            "./.claude/manifest.json",
         ]
         self.assert_decisions("Edit", "ask", protected_paths)
         self.assert_decisions("Write", "ask", protected_paths)
