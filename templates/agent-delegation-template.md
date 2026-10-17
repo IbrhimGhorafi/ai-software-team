@@ -3,7 +3,8 @@
 - **Delegation ID:** `TASK-<issue-id>-D<sequence>`
 - **Task / Issue:** 
 - **Agent role:** 
-- **Status:** BACKLOG / READY / CLAIMED / IN_PROGRESS / BLOCKED / IN_REVIEW / CHANGES_REQUESTED / APPROVED_AWAITING_HUMAN_MERGE / DONE / CANCELLED
+- **Task status:** BACKLOG / READY / CLAIMED / IN_PROGRESS / BLOCKED / IN_REVIEW / CHANGES_REQUESTED / APPROVED_AWAITING_HUMAN_MERGE / DONE / CANCELLED
+- **Delegation result:** queued / running / completed / partial / blocked / failed / cancelled / rejected
 - **Claim validation:** CONFIRMED / NEEDS_REVALIDATION
 - **Claimed at (observed):**
 - **Last checkpoint (observed):**
@@ -27,12 +28,15 @@ What outcome is requested?
 
 ## Standard agent return (copy the fields below into the coordinator record)
 - **Delegation ID:**
-- **Status:**
+- **Delegation result:**
 - **Changed paths:**
 - **Commit / branch:**
 - **Checks actually run and results:**
 - **Evidence links:**
 - **Risks / unresolved items:**
+- **Observed token usage:** unavailable unless exposed by the runtime
+- **Observed cost:** unavailable unless exposed by the runtime
+- **Observed duration:**
 - **Next recommendation:**
 
 ## Result reported by agent
