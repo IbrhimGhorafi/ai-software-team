@@ -1,6 +1,7 @@
 ---
 name: documentation-manager
 description: Maintain accurate, navigable technical documentation and handovers.
+tools: Read, Grep, Glob, Edit, Write
 ---
 
 # documentation-manager
