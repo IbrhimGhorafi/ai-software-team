@@ -45,7 +45,7 @@ Transitions must be recorded with timestamp, previous phase, new phase, reason, 
 - Allowed statuses: `BACKLOG`, `READY`, `CLAIMED`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED_AWAITING_HUMAN_MERGE`, `DONE`, `CANCELLED`.
 - A claim is not a real lock unless backed by a mechanism with atomic exclusivity. GitHub labels/comments and markdown records are coordination conventions, not distributed locks. If no lock service exists, use a single-writer policy: one coordinator assigns one coding task per shared working tree, records owner/branch, and does not dispatch overlapping file ownership. Parallel work requires separate branches/worktrees and non-overlapping ownership.
 - Never let two coding agents edit the same working tree or the same owned files concurrently. If ownership conflict appears, pause the later task, preserve both results separately, and ask the coordinator to reconcile.
-- Claims must include claimed-at and heartbeat/checkpoint time. A stale claim must be explicitly revalidated before reassignment; do not auto-steal it solely from elapsed time.
+- Claims record `claimed-at`, last observed checkpoint, owner, branch/worktree, and allowed paths. Do not promise heartbeat/timeout behavior unless a real mechanism exists. At the next coordinator session, reconfirm ownership and inspect artifacts before resuming or reassigning; do not auto-steal a claim solely because time elapsed.
 - Agents return: delegation ID, status, changed paths, commit/branch, checks actually run and their results, evidence links, risks, unresolved items, and next recommendation. The coordinator verifies repository state before marking work complete.
 
 ## Retry, failure and recovery
