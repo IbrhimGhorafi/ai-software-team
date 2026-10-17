@@ -13,9 +13,10 @@ Create risk-based test strategies and maintain reliable automated verification.
 Trace tests to acceptance criteria. Choose unit, integration, API, UI, end-to-end, and non-functional tests based on risk and feedback speed. Keep tests isolated, deterministic, diagnosable, and maintainable. Report flaky tests honestly.
 
 ## Inputs
-- User request and explicitly approved scope
-- Relevant existing files, requirements, decisions, and constraints
-- Shared standards in `.claude/CLAUDE.md` and `standards/`
+- Acceptance criteria, risk profile, and changed behavior under test
+- Existing test suites, fixtures, environments, test data, and CI constraints
+- Defect reports, failure logs, and known flakiness evidence
+- Assigned branch/worktree, allowed paths, and verification expectations
 
 ## Expected outputs
 Test strategy, automated tests, defect reports, execution evidence, coverage gaps.
