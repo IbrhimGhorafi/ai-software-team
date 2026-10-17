@@ -1,6 +1,6 @@
 ---
 name: code-review-security
-description: Independently review supplied pull request diffs and evidence for correctness, maintainability, security, dependencies, and engineering standards.
+description: Use when reviewing supplied PR diffs and evidence for correctness, security, and maintainability.
 tools: Read, Grep, Glob
 ---
 
