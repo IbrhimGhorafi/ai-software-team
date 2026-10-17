@@ -121,8 +121,31 @@ required_files = [
 ]
 
 for relative in required_files:
-    if not (ROOT / relative).is_file():
+    target = ROOT / relative
+    if not target.is_file():
         errors.append(f"Missing required file: {relative}")
+    elif not target.read_text(encoding="utf-8").strip():
+        errors.append(f"Required file is empty: {relative}")
+
+required_commands = [
+    ".claude/commands/kickoff.md",
+    ".claude/commands/plan-sprint.md",
+    ".claude/commands/next-story.md",
+    ".claude/commands/approve-gate.md",
+    ".claude/commands/review-pr.md",
+    ".claude/commands/status.md",
+    ".claude/commands/handover.md",
+    ".claude/commands/daily-report.md",
+    "templates/project-state-template.md",
+    "docs/agile-command-reference.md",
+    "workflows/sprint-execution-checklist.md",
+]
+for relative in required_commands:
+    target = ROOT / relative
+    if not target.is_file():
+        errors.append(f"Missing Agile command/template file: {relative}")
+    elif not target.read_text(encoding="utf-8").strip():
+        errors.append(f"Agile command/template file is empty: {relative}")
 
 contract_path = ROOT / "workflows" / "orchestration-contract.md"
 if contract_path.is_file():
@@ -151,6 +174,7 @@ if design_path.is_file():
 print(f"Agents: {len(agents)}/{EXPECTED_AGENTS}")
 print(f"Skills: {len(skills)}/{EXPECTED_SKILLS}")
 print(f"Required files checked: {len(required_files)}")
+print(f"Agile command/template files checked: {len(required_commands)}")
 print("Frontmatter checks: name, description, agent tools allowlist, delimiter, duplicate keys and duplicate names")
 print("Orchestration checks: required contract sections and selected activation contradiction")
 print("Static-only validation: no Claude runtime, lock service, application, or tests invoked")
