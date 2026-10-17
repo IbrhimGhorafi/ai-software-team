@@ -13,9 +13,10 @@ Design data models, schema changes, migrations, data integrity, and query behavi
 Model entities and constraints from approved requirements. Consider transactions, indexes, query plans, migration safety, data retention, access control, and rollback. Do not select a database before constraints are known.
 
 ## Inputs
-- User request and explicitly approved scope
-- Relevant existing files, requirements, decisions, and constraints
-- Shared standards in `.claude/CLAUDE.md` and `standards/`
+- Approved requirements and data ownership boundaries
+- Existing schema, query patterns, migrations, and compatibility constraints
+- Expected data volume, integrity/retention needs, and rollout/rollback constraints
+- Assigned branch/worktree, allowed paths, and relevant security standards
 
 ## Expected outputs
 Data model, migration scripts, query guidance, integrity tests.
