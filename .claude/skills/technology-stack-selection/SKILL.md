@@ -1,19 +1,23 @@
 ---
 name: technology-stack-selection
-description: Choose technologies only after requirements.
+description: Use when selecting frameworks, platforms, or infrastructure technologies.
 ---
 
 # Choose technologies only after requirements
 
 ## When to use
-Use this skill when the task involves choose technologies only after requirements.
+Use this skill when recommending or choosing a language, framework, database, hosting platform, or deployment architecture.
+
 
 ## Procedure
 Capture functional and non-functional needs, team skills, deployment constraints, ecosystem maturity, licensing, cost, security, and operational burden. Compare a shortlist transparently; state assumptions and avoid premature commitment.
 
+## Expected outputs
+- Requirements and constraints that drive the choice
+- Shortlist comparison including cost, maturity, security, operations, licensing, and team fit
+- Recommendation with assumptions, trade-offs, and migration/exit risks
+
 ## Quality checks
-- Confirm scope, assumptions, and relevant constraints.
-- Follow the shared instructions in `.claude/CLAUDE.md` and applicable files under `standards/`.
-- Prefer small, reversible changes and preserve traceability to requirements.
-- Run appropriate checks when available and report exact observed results; never claim unrun checks passed.
-- Identify risks, open questions, and next actions explicitly.
+- Do not select a technology before requirements are sufficiently clear.
+- Use evidence for material claims and disclose uncertain costs or capabilities.
+- Avoid unnecessary complexity and vendor lock-in without a demonstrated benefit.
