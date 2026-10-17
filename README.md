@@ -6,8 +6,8 @@ A reusable, project-independent starter kit for coordinating AI-assisted softwar
 
 | Area | Contents |
 |---|---|
-| Agents | 12 focused roles under .claude/agents/ |
-| Skills | 18 reusable procedures under .claude/skills/<skill-name>/SKILL.md |
+| Agents | 16 focused roles under .claude/agents/, including UI/UX Designer, SRE / Observability Engineer, Performance Engineer, and Release Manager |
+| Skills | 22 reusable procedures under .claude/skills/<skill-name>/SKILL.md |
 | Shared instructions | .claude/CLAUDE.md and local permission guardrails in .claude/settings.json |
 | Standards | Engineering, security, Git workflow, and definition of done |
 | Templates | Requirements, stories, sprint plans, architecture decisions, test plans, code reviews, handovers, sprint reviews, retrospectives, release readiness, and daily reports |

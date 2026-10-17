@@ -4,12 +4,12 @@
     "agents": {
       "directory": ".claude/agents",
       "pattern": "*.md",
-      "minimum_count": 12
+      "minimum_count": 16
     },
     "skills": {
       "directory": ".claude/skills",
       "pattern": "*/SKILL.md",
-      "minimum_count": 18
+      "minimum_count": 22
     },
     "commands": {
       "directory": ".claude/commands",
