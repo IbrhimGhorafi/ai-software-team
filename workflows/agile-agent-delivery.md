@@ -98,7 +98,7 @@ Task claiming is a coordination protocol implemented by the main session and iss
 - [ ] No secrets, credentials, or generated clutter are included.
 - [ ] PR has not been merged.
 
-## AI Tech Lead review protocol
+## Coordinator review protocol
 
 Review the current PR diff, not merely the developer summary. Verify correctness, acceptance criteria, architecture, test quality, security/privacy, dependency changes, maintainability, CI status, evidence, and unresolved review threads. If changes are needed, request changes with actionable findings, severity, affected file/line, and expected resolution. Approve only when the current revision is acceptable and evidence supports it. If formal GitHub reviews are unavailable, label the report as a comment and do not claim a formal approval. Approval is not merge authorization.
 
