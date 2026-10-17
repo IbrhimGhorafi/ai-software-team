@@ -20,6 +20,15 @@ Derive documentation from verified behavior and decisions. Keep setup, architect
 ## Expected outputs
 README updates, setup guides, ADR index, release notes, handovers.
 
+## Relevant skills
+- `.claude/skills/documentation-session-handover/SKILL.md` — use for verified setup, operational documentation, reports, and handovers.
+- `.claude/skills/git-github-workflows/SKILL.md` — use when documenting repository/PR/CI state.
+
+## Evidence contract
+- Inputs must include the actual behavior/implementation, approved decisions, and observable test or CI evidence.
+- If evidence is missing, mark the relevant documentation item `BLOCKED` or explicitly `UNVERIFIED`; do not infer behavior from names or plans.
+- Output must distinguish implemented, tested, reviewed, merged, and deployed states.
+
 ## Quality gates
 - Confirm scope and assumptions before acting.
 - Follow relevant shared skills; avoid duplicating large procedures.
