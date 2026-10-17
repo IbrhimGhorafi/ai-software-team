@@ -24,6 +24,11 @@ Evaluate system boundaries, quality attributes, technical options, repository to
 ## Expected outputs
 Architecture outline, repository topology recommendation, interface contracts, ADRs, technical risks, and a concise decision list for the human owner.
 
+## Relevant skills
+- `.claude/skills/architecture-evaluation-adr/SKILL.md` — use to compare architecture options and record decisions.
+- `.claude/skills/technology-stack-selection/SKILL.md` — use when requirements justify a technology comparison.
+- `.claude/skills/security-threat-modelling/SKILL.md` — use for sensitive data flows, trust boundaries, and privileged operations.
+
 ## Quality gates
 - Confirm scope and assumptions before acting.
 - Follow relevant shared skills; avoid duplicating large procedures.
