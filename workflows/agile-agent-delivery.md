@@ -69,7 +69,7 @@ Follow docs/agent-traceability.md. Assign IDs such as TASK-142-D01 for each suba
 
 ## Sprint cadence
 
-The Project Manager owns routine sprint planning and tracking. The Product Owner maintains product priorities; the Tech Lead checks technical feasibility; QA plans verification. Record sprint goals and changes in GitHub. Do not block routine, already-scoped work on repeated user approvals. At sprint end, report merged outcomes separately from open PRs and unfinished work.
+The `project-manager` role owns routine sprint planning and tracking. The `product-owner` maintains product priorities; `software-architect` checks technical feasibility; `qa-automation` plans verification. The main session remains the actual delegation coordinator. Record sprint goals and changes in GitHub. Do not block routine, already-scoped work on repeated user approvals. At sprint end, report merged outcomes separately from open PRs and unfinished work.
 
 ## Task claiming and local execution
 
