@@ -1,6 +1,6 @@
 ---
 name: database-engineer
-description: Design data models, schema changes, migrations, data integrity, and query behavior.
+description: Use when designing schemas, migrations, data integrity, or query behavior.
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
