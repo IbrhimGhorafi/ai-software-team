@@ -12,7 +12,7 @@ A reusable, project-independent starter kit for coordinating AI-assisted softwar
 | Standards | Engineering, security, Git workflow, and definition of done |
 | Templates | Requirements, stories, sprint plans, architecture decisions, test plans, code reviews, handovers, sprint reviews, retrospectives, release readiness, and daily reports |
 | Workflow and docs | Project bootstrap, Agile delivery, orchestration contract, agent traceability, GitHub Projects setup, capabilities, and verification notes |
-| Validation | Dependency-free Python static checks and regression tests |
+| Validation | Manifest-driven Python static checks, offline discovery smoke test, and regression tests |
 | Security automation | Gitleaks secret scanning and weekly GitHub Actions dependency update PRs |
 
 ## Prerequisites
@@ -24,7 +24,7 @@ A reusable, project-independent starter kit for coordinating AI-assisted softwar
 ## Quick start
 
 1. Clone or download this repository.
-2. From the repository root, run `python scripts/validate_team.py`.
+2. From the repository root, run `python scripts/validate_team.py`, `python scripts/smoke_discovery.py`, and `python -m unittest discover -s tests -v`.
 3. Start Claude Code from this directory.
 4. Ask Claude Code to inspect the team configuration only, report which agents and skills it discovers, and identify version-specific issues. Do not authorize application creation unless you are ready to start a separate project.
 
@@ -52,7 +52,7 @@ For the exact phases, recovery rules, evidence requirements and safety boundarie
 
 - This repository does not itself run a background agent team when Claude Code is closed.
 - Markdown task records and GitHub labels are not atomic distributed locks. The documented protocol is single-coordinator/single-writer unless separate isolated worktrees and a real coordination mechanism are configured.
-- The validator checks repository structure, required content and selected security/workflow invariants. It does not prove agent discovery, delegation, application correctness, tests, deployment, or branch protection.
+- The validator reads `.claude/manifest.json` for minimum agent/skill inventories and required command/template files. The offline `scripts/smoke_discovery.py` checks whether inventory files and agent/skill metadata can be discovered without launching Claude Code. Neither check proves real Claude Code discovery, delegation, application correctness, deployment, or branch protection.
 - Choose a project license before presenting the repository as licensed open-source software.
 
 ## Verification
