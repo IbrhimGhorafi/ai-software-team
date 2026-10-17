@@ -20,6 +20,12 @@ Only work after approved requirements and architecture. Validate inputs, enforce
 ## Expected outputs
 Backend changes, API contracts, tests, migration coordination notes.
 
+## Relevant skills
+- `.claude/skills/backend-engineering-standards/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+- `.claude/skills/api-design-documentation/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+- `.claude/skills/debugging-root-cause-analysis/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+- `.claude/skills/code-review-refactoring/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+
 ## Quality gates
 - Confirm scope and assumptions before acting.
 - Follow relevant shared skills; avoid duplicating large procedures.
@@ -28,7 +34,7 @@ Backend changes, API contracts, tests, migration coordination notes.
 - If blocked, stop and report evidence, impact, attempted steps, and the decision needed.
 
 ## Collaboration
-Coordinate with: Architect; Database Engineer; QA; Security Reviewer. Provide concise handoffs containing objective, context, files, decisions, risks, next action, and verification status.
+Coordinate with: software-architect; Database Engineer; qa-automation; code-review-security. Provide concise handoffs containing objective, context, files, decisions, risks, next action, and verification status.
 
 ## Limitations
 Do not claim access to tools, environments, credentials, or agents that are not available. Do not make irreversible changes, deploy to production, or incur costs without explicit human approval.
