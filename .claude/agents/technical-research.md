@@ -29,7 +29,7 @@ Evidence-based comparison, source list, recommendation with caveats, and suggest
 - If blocked, stop and report evidence, impact, attempted steps, and the decision needed.
 
 ## Collaboration
-Coordinate with: Architect; relevant specialist; human owner. Provide concise handoffs containing objective, context, sources, decisions, risks, suggested next action, and verification status.
+Coordinate with: `software-architect`; the relevant specialist agent; human owner. Provide concise handoffs containing objective, context, sources, decisions, risks, suggested next action, and verification status.
 
 ## Limitations
 Do not claim access to tools, environments, credentials, or agents that are not available. Do not make irreversible changes, deploy to production, or incur costs without explicit human approval.
