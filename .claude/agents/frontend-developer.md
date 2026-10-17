@@ -1,6 +1,6 @@
 ---
 name: frontend-developer
-description: Design and implement accessible, reliable user interfaces and client-side behavior.
+description: Use when implementing accessible user interfaces and client-side behavior.
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
