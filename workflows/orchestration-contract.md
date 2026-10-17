@@ -51,7 +51,7 @@ Transitions must be recorded with timestamp, previous phase, new phase, reason, 
 ## Retry, failure and recovery
 - On a failed task, preserve logs/evidence, identify the failing acceptance check, and classify as code defect, environment/tool issue, unclear requirement, dependency, or external access.
 - Permit at most two automatic retries for the same unchanged failure. Each retry must change one relevant condition or strategy; otherwise stop and report blocked. Do not loop indefinitely or burn context/tokens.
-- On agent timeout/disappearance, mark `BLOCKED` or `UNKNOWN`, inspect the branch and working tree, and preserve partial work. Reassign only after confirming no concurrent writer and documenting the handover.
+- If an agent fails to return in the current session, mark `BLOCKED` and preserve partial work. Use `UNKNOWN` only as a reconciliation observation, not a task status. At session resume, inspect the branch/worktree and reconfirm ownership before reassignment; document the handover.
 - If CI fails, inspect the failing job and logs, reproduce when practical, and never downgrade or bypass required checks merely to make the PR green.
 - If requirements or architecture conflict, stop dependent work, record the conflict and impact, and resolve via the role owner or sponsor decision gate.
 - On context/token pressure, stop starting new work, persist the checkpoint and handover, and report what remains. Never claim the overall project is complete because the budget or session ended.
