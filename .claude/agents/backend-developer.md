@@ -1,6 +1,7 @@
 ---
 name: backend-developer
 description: Design and implement server-side behavior, APIs, authorization, and integration boundaries.
+tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
 # backend-developer
