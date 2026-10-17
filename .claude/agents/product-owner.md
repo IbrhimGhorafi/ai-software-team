@@ -1,6 +1,6 @@
 ---
 name: product-owner
-description: Transform an initial product idea into clear requirements, a prioritized backlog, and testable acceptance criteria.
+description: Use when turning a product idea into prioritized requirements and acceptance criteria.
 tools: Read, Grep, Glob, Edit, Write
 ---
 
