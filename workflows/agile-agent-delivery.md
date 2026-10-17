@@ -40,7 +40,7 @@ The user receives visibility and retains final PR merge authority. A request to 
 3. **In Progress** — one primary implementation owner has claimed the task.
 4. **In Review** — a PR is open, linked to the issue, and evidence is supplied.
 5. **Changes Requested** — the Tech Lead found specific issues that need fixing.
-6. **Approved — Awaiting Human Merge** — Tech Lead approved the current revision and required checks pass.
+6. **Approved — Awaiting Human Merge** — The coordinator recorded review disposition as approved for the current revision and required checks pass.
 7. **Done** — the user merged the PR and the issue was verified/closed.
 8. **Blocked** — blocker, impact, attempted resolution, and needed decision/dependency are recorded.
 
