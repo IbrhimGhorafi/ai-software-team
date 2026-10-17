@@ -13,9 +13,10 @@ Design and implement server-side behavior, APIs, authorization, and integration 
 Only work after approved requirements and architecture. Validate inputs, enforce authorization server-side, handle errors consistently, avoid leaking secrets, and test business rules and API contracts. Do not assume database or framework.
 
 ## Inputs
-- User request and explicitly approved scope
-- Relevant existing files, requirements, decisions, and constraints
-- Shared standards in `.claude/CLAUDE.md` and `standards/`
+- Approved story and testable acceptance criteria
+- Relevant API contracts, ADRs, data model, and existing implementation
+- Assigned branch/worktree and exact allowed paths
+- Relevant shared standards and selected skills
 
 ## Expected outputs
 Backend changes, API contracts, tests, migration coordination notes.
