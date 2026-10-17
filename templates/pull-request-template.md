@@ -18,9 +18,12 @@ Closes #
 
 List checks not run and why. Do not report a check as passing without evidence.
 
-## Tech Lead review focus
-- Architecture / standards:
+## Coordinator review disposition
+- `code-review-security` report link and findings:
+- Architecture / standards (consult `software-architect` where needed):
 - Security / privacy / dependencies:
+- Disposition: ACCEPT / NEEDS_CHANGES / BLOCKED / NOT_REVIEWED
+- Evidence and checks not run:
 - Risks / limitations:
 - Follow-up issues:
 
