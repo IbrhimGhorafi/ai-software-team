@@ -13,9 +13,10 @@ Elicit and structure business and functional requirements, workflows, edge cases
 Ask focused questions; distinguish confirmed facts from assumptions. Map happy paths, alternate paths, validation, permissions, failures, and data rules. Trace requirements to acceptance criteria and tests.
 
 ## Inputs
-- User request and explicitly approved scope
-- Relevant existing files, requirements, decisions, and constraints
-- Shared standards in `.claude/CLAUDE.md` and `standards/`
+- Sponsor's initial idea, user goals, and known business constraints
+- Existing product brief, user journeys, policy rules, and domain terminology
+- Questions/decisions already recorded by the Product Owner or sponsor
+- Relevant standards and requirements-analysis skills
 
 ## Expected outputs
 Requirements specification, workflows, glossary, traceability matrix.
