@@ -16,3 +16,4 @@ Include the affected file/version, impact, reproducible steps that do not expose
 - Local Claude Code deny rules are defense-in-depth, not a security sandbox.
 - GitHub branch protection, secret scanning, and push protection require separate repository-owner configuration.
 - Never test against systems or credentials you do not own or have explicit permission to assess.
+- See [Security Guardrails](docs/security-guardrails.md) for the threat model, known bypasses, and the runtime verification procedure.
