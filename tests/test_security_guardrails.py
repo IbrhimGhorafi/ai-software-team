@@ -98,10 +98,13 @@ class SimulatedRuleMatching(unittest.TestCase):
         self.assert_decisions("Edit", "deny", ["./.env", "./.env.prod", "./certs/server.pem", "./secrets/a.txt"])
 
     def test_sensitive_configuration_requires_confirmation(self):
-        self.assert_decisions("Edit", "ask", [
+        protected_paths = [
             "./.claude/settings.json", "./.github/workflows/validate-team.yml",
             "./.github/workflows/secret-scan.yml", "./.github/CODEOWNERS",
-        ])
+            "./.github/dependabot.yml",
+        ]
+        self.assert_decisions("Edit", "ask", protected_paths)
+        self.assert_decisions("Write", "ask", protected_paths)
 
     def test_other_pushes_and_risky_operations_ask(self):
         self.assert_decisions("Bash", "ask", [
