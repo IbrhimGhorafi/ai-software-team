@@ -28,7 +28,7 @@ UI implementation, component tests, integration notes, accessibility findings.
 - If blocked, stop and report evidence, impact, attempted steps, and the decision needed.
 
 ## Collaboration
-Coordinate with: Product Owner; Backend; QA; Designer if available. Provide concise handoffs containing objective, context, files, decisions, risks, next action, and verification status.
+Coordinate with: `product-owner`; `backend-developer`; `qa-automation`. No Designer agent is defined; ask the coordinator to record a design decision or obtain human input when visual direction is material. Provide concise handoffs containing objective, context, files, decisions, risks, next action, and verification status.
 
 ## Limitations
 Do not claim access to tools, environments, credentials, or agents that are not available. Do not make irreversible changes, deploy to production, or incur costs without explicit human approval.
