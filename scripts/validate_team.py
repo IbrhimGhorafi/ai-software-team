@@ -137,7 +137,7 @@ for kind, paths in (("agents", agents), ("skills", skills)):
         errors.append(f"Manifest requires at least {minimum} {kind} files, found {len(paths)}")
 
 
-def parse_frontmatter(path: Path) -> dict[str, str]:
+def parse_frontmatter(path: Path, required_fields: tuple[str, ...] = ("name", "description")) -> dict[str, str]:
     text = require_nonempty(path)
     if not text:
         return {}
@@ -165,7 +165,7 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
         if key in fields:
             errors.append(f"Duplicate frontmatter key '{key}' in {path.relative_to(ROOT)}")
         fields[key] = value
-    for required in ("name", "description"):
+    for required in required_fields:
         if not fields.get(required, "").strip():
             errors.append(f"Missing or empty '{required}' in {path.relative_to(ROOT)}")
     return fields
@@ -230,6 +230,7 @@ def check_required_files(kind: str, paths: list[Path]) -> None:
 check_required_files("commands", commands)
 for path in commands:
     text = require_nonempty(path, "command")
+    parse_frontmatter(path, required_fields=("description",))
     if len(text.splitlines()) < 5:
         errors.append(f"Command content is suspiciously short: {path.relative_to(ROOT)}")
 
