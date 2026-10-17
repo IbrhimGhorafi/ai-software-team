@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "inventory": {
+    "agents": {
+      "directory": ".claude/agents",
+      "pattern": "*.md",
+      "minimum_count": 12
+    },
+    "skills": {
+      "directory": ".claude/skills",
+      "pattern": "*/SKILL.md",
+      "minimum_count": 18
+    },
+    "commands": {
+      "directory": ".claude/commands",
+      "pattern": "*.md",
+      "required": [
+        "kickoff.md",
+        "plan-sprint.md",
+        "next-story.md",
+        "review-pr.md",
+        "status.md",
+        "daily-report.md",
+        "handover.md",
+        "approve-gate.md",
+        "sprint-review.md",
+        "retro.md",
+        "release-check.md"
+      ]
+    },
+    "templates": {
+      "directory": "templates",
+      "pattern": "*.md",
+      "required": [
+        "requirements-template.md",
+        "user-story-template.md",
+        "architecture-decision-template.md",
+        "sprint-plan-template.md",
+        "test-plan-template.md",
+        "code-review-template.md",
+        "session-handover-template.md",
+        "sprint-review-template.md",
+        "retrospective-template.md",
+        "release-readiness-template.md"
+      ]
+    }
+  }
+}
