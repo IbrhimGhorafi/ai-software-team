@@ -10,8 +10,11 @@ The commands under .claude/commands/ are reusable session prompts, not a backgro
 4. /next-story — take one dependency-ready task and work within its bounded scope.
 5. /review-pr — inspect the real diff and evidence before requesting merge.
 6. /status and /daily-report — reconcile progress from durable state and observable evidence.
-7. /handover — preserve a resumable state before ending the session.
-8. /approve-gate — use when a material sponsor decision is genuinely required.
+7. /sprint-review — compare sprint outcomes with the goal and record stakeholder feedback.
+8. /retro — select a small number of measurable process improvements.
+9. /release-check — assess release readiness; this command does not deploy.
+10. /handover — preserve a resumable state before ending the session.
+11. /approve-gate — use when a material sponsor decision is genuinely required.
 
 ## Operating rules
 
