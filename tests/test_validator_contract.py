@@ -92,6 +92,40 @@ class ValidatorRegressionTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("permission deny rule missing", result.stdout)
 
+
+    def test_mock_discovery_smoke_passes(self):
+        result = subprocess.run(
+            [sys.executable, "scripts/smoke_discovery.py"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("MOCK DISCOVERY PASS", result.stdout)
+
+    def test_manifest_drives_inventory_minimums(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            manifest_path = copy / ".claude/manifest.json"
+            import json
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["inventory"]["agents"]["minimum_count"] = 999
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("manifest requires at least 999 agents", result.stdout.lower())
+
+    def test_validator_rejects_invalid_manifest_schema(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            (copy / ".claude/manifest.json").write_text('{"schema_version":99,"inventory":{}}', encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("Unsupported or missing manifest schema_version", result.stdout)
+
     def test_validator_rejects_writable_validation_workflow(self):
         with tempfile.TemporaryDirectory() as temporary:
             copy = Path(temporary) / "repo"
