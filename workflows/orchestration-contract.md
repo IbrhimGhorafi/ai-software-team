@@ -82,6 +82,10 @@ Proceed with documented assumptions for routine and reversible choices. Pause an
 
 Ask one concise question containing the decision, recommended option, alternatives, cost/risk and what work can continue safely meanwhile.
 
+## High-risk command gate
+
+Before running any command that can mutate external state, credentials, infrastructure, production data, remote repositories, permissions, or published artifacts, the coordinator must classify the command and check explicit authorization. Examples include `gh repo create`, mutating `gh api` calls, `terraform apply/destroy`, cloud CLI writes, `kubectl apply/delete`, database destructive DDL/data deletion, `docker push`, deployment/publish commands, and secret/credential access. Do not run such commands unless the exact action and target are authorized. Prefer read-only inspection and dry-run/plan modes first. Existing Claude Code deny rules are defense-in-depth only; they are not a complete security boundary, and shell commands can bypass naive text patterns. Validate actual behavior in a real Claude Code session before claiming enforcement.
+
 ## Acceptance checklist for a usable orchestration run
 - [ ] State reconciled against current repository, issues, PRs and CI.
 - [ ] Phase and next task are explicit.
