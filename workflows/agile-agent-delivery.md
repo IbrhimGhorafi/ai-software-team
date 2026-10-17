@@ -9,7 +9,7 @@
 - GitHub Projects is the planning board for the sprint. Keep status, priority, iteration, estimate, and owner visible when configured.
 - GitHub does not automatically know which local subagent was called, what it returned, or whether a local test ran unless that is recorded.
 - Every implementation task uses an isolated branch. Use a separate Git worktree per concurrently running coding agent where practical.
-- The AI Tech Lead reviews actual diffs and evidence. The repository owner/user alone performs the final merge; agents must never merge PRs or configure automation to merge on the user's behalf.
+- The `code-review-security` agent performs a read-only review of supplied diffs and evidence and returns findings. The coordinator records review disposition; the reviewer does not approve its own implementation. The repository owner/user alone performs the final merge; agents must never merge PRs or configure automation to merge on the user's behalf.
 
 ## End-to-end workflow from an idea
 
