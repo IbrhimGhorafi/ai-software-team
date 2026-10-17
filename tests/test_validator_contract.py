@@ -239,5 +239,30 @@ class ValidatorRegressionTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("Bash(terraform apply*)", result.stdout)
 
+
+    def test_validator_rejects_missing_secret_read_deny(self):
+        for rule in ("Read(./.env.*)", "Read(./**/*.pem)", "Read(./**/*.key)"):
+            with self.subTest(rule=rule), tempfile.TemporaryDirectory() as temporary:
+                copy = Path(temporary) / "repo"
+                shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+                settings_path = copy / ".claude/settings.json"
+                import json
+                settings = json.loads(settings_path.read_text(encoding="utf-8"))
+                settings["permissions"]["deny"].remove(rule)
+                settings_path.write_text(json.dumps(settings), encoding="utf-8")
+                result = self.run_validator(copy)
+                self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn(rule, result.stdout)
+
+    def test_validator_reports_non_object_manifest_without_crashing(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            (copy / ".claude/manifest.json").write_text("[]", encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Manifest root must be a JSON object", result.stdout)
+            self.assertNotIn("Traceback", result.stderr)
+
 if __name__ == "__main__":
     unittest.main()
