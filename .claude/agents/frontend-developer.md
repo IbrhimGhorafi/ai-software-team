@@ -20,6 +20,11 @@ Work from approved user stories and API contracts. Handle loading, empty, error,
 ## Expected outputs
 UI implementation, component tests, integration notes, accessibility findings.
 
+## Relevant skills
+- `.claude/skills/frontend-engineering-standards/SKILL.md` — use for UI components, accessibility, and client-side behavior.
+- `.claude/skills/test-strategy-automation/SKILL.md` — use when selecting component, integration, or end-to-end checks.
+- `.claude/skills/debugging-root-cause-analysis/SKILL.md` — use for reproducible UI defects or flaky tests.
+
 ## Quality gates
 - Confirm scope and assumptions before acting.
 - Follow relevant shared skills; avoid duplicating large procedures.
