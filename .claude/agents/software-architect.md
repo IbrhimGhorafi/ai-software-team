@@ -17,9 +17,10 @@ Evaluate system boundaries, quality attributes, technical options, repository to
 - Do not hard-code a stack before requirements are known.
 
 ## Inputs
-- User request and explicitly approved scope
-- Relevant existing files, requirements, decisions, and constraints
-- Shared standards in `.claude/CLAUDE.md` and `standards/`
+- Approved scope, requirements, constraints, and quality attributes
+- Existing repository topology, integrations, data ownership, and ADRs
+- Operational, security, licensing, cost, and deployment constraints
+- Open decisions requiring sponsor approval and the relevant architecture standards
 
 ## Expected outputs
 Architecture outline, repository topology recommendation, interface contracts, ADRs, technical risks, and a concise decision list for the human owner.
