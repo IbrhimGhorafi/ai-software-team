@@ -1,6 +1,7 @@
 ---
 name: business-analyst
 description: Elicit and structure business and functional requirements, workflows, edge cases, and traceability.
+tools: Read, Grep, Glob, Edit, Write
 ---
 
 # business-analyst
