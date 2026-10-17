@@ -301,9 +301,44 @@ if settings_text:
             "Bash(cat .env*)", "Bash(cat */.env*)", "Read(./.env)",
             "Read(./.env.*)", "Read(./**/*.pem)", "Read(./**/*.key)",
         )
-        for rule in required_denies:
-            if rule not in deny:
-                errors.append(f"Claude Code permission deny rule missing: {rule}")
+        required_denies += (
+            "Bash(git push*--force*)", "Bash(git push* -f*)", "Bash(git push* +*)",
+            "Bash(git push* main)", "Bash(git push* main *)", "Bash(git push*:main)",
+            "Bash(git push*:refs/heads/main*)", "Bash(git push*--delete*)", "Bash(git push*--mirror*)",
+            "Bash(rm -fr*)", "Bash(rm -Rf*)", "Bash(rm --recursive*)",
+            "Bash(gh auth token*)", "Bash(gh auth status*--show-token*)", "Bash(printenv*)",
+            "Bash(source .env*)", "Bash(head*.env*)", "Bash(tail*.env*)",
+            "Bash(grep*.env*)", "Bash(sed*.env*)", "Bash(awk*.env*)",
+            "Read(./secrets/**)", "Edit(./.env)", "Edit(./.env.*)",
+            "Edit(./**/*.pem)", "Edit(./**/*.key)", "Edit(./secrets/**)",
+        )
+        required_asks = (
+            "Bash(git push*)", "Bash(rm -r*)", "Bash(rm -R*)",
+            "Bash(gh api*)", "Bash(gh repo edit*)", "Bash(gh secret*)",
+            "Edit(./.claude/settings.json)", "Edit(./.github/workflows/**)",
+            "Edit(./.github/CODEOWNERS)",
+        )
+        permissions = settings.get("permissions", {})
+        ask = permissions.get("ask", [])
+        allow = permissions.get("allow", [])
+        for name, rules in (("deny", deny), ("ask", ask), ("allow", allow)):
+            if not isinstance(rules, list) or not all(isinstance(rule, str) for rule in rules):
+                errors.append(f"Claude Code permission {name} rules must be a list of strings")
+            elif len(set(rules)) != len(rules):
+                errors.append(f"Claude Code permission {name} rules contain duplicates")
+        if isinstance(deny, list) and isinstance(ask, list) and isinstance(allow, list):
+            for rule in required_denies:
+                if rule not in deny:
+                    errors.append(f"Claude Code permission deny rule missing: {rule}")
+            for rule in required_asks:
+                if rule not in ask:
+                    errors.append(f"Claude Code permission ask rule missing: {rule}")
+            unrestricted = {"*", "Bash", "Bash(*)", "Edit", "Edit(*)", "Write", "Write(*)", "Read", "Read(*)"}
+            for rule in allow:
+                if isinstance(rule, str) and rule.strip() in unrestricted:
+                    errors.append(f"Claude Code permission allow rule is unrestricted: {rule}")
+                if rule in deny or rule in ask:
+                    errors.append(f"Claude Code permission rule is both allowed and denied/asked: {rule}")
     except (json.JSONDecodeError, AttributeError) as exc:
         errors.append(f"Invalid .claude/settings.json: {exc}")
 
