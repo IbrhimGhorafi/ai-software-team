@@ -52,6 +52,14 @@ Transitions must be recorded with timestamp, previous phase, new phase, reason, 
 - Claims record `claimed-at`, last observed checkpoint, owner, branch/worktree, and allowed paths. Do not promise heartbeat/timeout behavior unless a real mechanism exists. At the next coordinator session, reconfirm ownership and inspect artifacts before resuming or reassigning; do not auto-steal a claim solely because time elapsed.
 - Agents return: delegation ID, status, changed paths, commit/branch, checks actually run and their results, evidence links, risks, unresolved items, and next recommendation. The coordinator verifies repository state before marking work complete.
 
+## Session and cost budget defaults
+
+- Default maximum: **3 active delegations per coordinator session**, including research/review work. The coordinator may lower this for complex tasks or a tight context budget; raise it only when the work is independent and verification capacity remains.
+- Default implementation WIP: **one active coding delegation per shared working tree**. Parallel coding is allowed only in separate worktrees/branches with non-overlapping allowed paths; default maximum is **2 concurrent coding delegations** unless the human owner approves a higher limit for a specific session.
+- Before delegating, record the task's expected output, stopping condition, and verification budget. Prefer the least costly model that is actually available and suitable in the current runtime; never assume model IDs or pricing.
+- Record observed token use, cost, and duration only when the runtime exposes reliable values. Otherwise record `unavailable`; do not fabricate estimates as measurements.
+- Stop starting new work when context or time pressure could prevent verification, evidence capture, or a useful handover.
+
 ## Retry, failure and recovery
 - On a failed task, preserve logs/evidence, identify the failing acceptance check, and classify as code defect, environment/tool issue, unclear requirement, dependency, or external access.
 - Permit at most two automatic retries for the same unchanged failure. Each retry must change one relevant condition or strategy; otherwise stop and report blocked. Do not loop indefinitely or burn context/tokens.
