@@ -3,6 +3,9 @@ description: Produce a concise daily delivery report from reconciled evidence
 ---
 
 # Daily report
+Use `project-manager` operating rules and `documentation-session-handover`. Report only observed evidence; separate implemented, tested, reviewed, merged, deployed, and not verified.
+
+
 
 Reconcile durable project state with actual repository, task, PR, and CI evidence where available. Report:
 - Sprint goal and current phase
