@@ -20,6 +20,11 @@ Trace tests to acceptance criteria. Choose unit, integration, API, UI, end-to-en
 ## Expected outputs
 Test strategy, automated tests, defect reports, execution evidence, coverage gaps.
 
+## Relevant skills
+- `.claude/skills/test-strategy-automation/SKILL.md` — use for risk-based test levels and automation coverage.
+- `.claude/skills/debugging-root-cause-analysis/SKILL.md` — use for failures and flakiness.
+- `.claude/skills/api-design-documentation/SKILL.md` — use for contract-focused API verification.
+
 ## Quality gates
 - Confirm scope and assumptions before acting.
 - Follow relevant shared skills; avoid duplicating large procedures.
