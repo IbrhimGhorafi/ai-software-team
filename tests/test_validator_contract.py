@@ -225,5 +225,19 @@ class ValidatorRegressionTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("missing a Relevant skills section", result.stdout)
 
+
+    def test_validator_rejects_missing_high_risk_command_deny(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            settings_path = copy / ".claude/settings.json"
+            import json
+            settings = json.loads(settings_path.read_text(encoding="utf-8"))
+            settings["permissions"]["deny"].remove("Bash(terraform apply*)")
+            settings_path.write_text(json.dumps(settings), encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("Bash(terraform apply*)", result.stdout)
+
 if __name__ == "__main__":
     unittest.main()
