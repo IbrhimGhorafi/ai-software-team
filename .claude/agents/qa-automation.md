@@ -1,6 +1,6 @@
 ---
 name: qa-automation
-description: Create risk-based test strategies and maintain reliable automated verification.
+description: Use when planning risk-based tests or implementing automated verification.
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
