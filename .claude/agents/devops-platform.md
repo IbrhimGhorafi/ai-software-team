@@ -18,10 +18,10 @@ Design repeatable development, CI/CD, container, infrastructure, and operational
 - Never deploy or incur cloud costs without approval.
 
 ## Inputs
-- User request and explicitly approved scope
-- Approved repository plan and relevant architecture decisions
-- Relevant existing files, requirements, decisions, and constraints
-- Shared standards in `.claude/CLAUDE.md` and `standards/`
+- Approved delivery/environment requirements and deployment targets
+- Existing CI workflows, container definitions, infrastructure code, and runbooks
+- Explicit authorization boundaries for remote resources, permissions, spending, and deployment
+- Assigned branch/worktree, allowed paths, and operational/security standards
 
 ## Expected outputs
 CI workflows, container/deployment configuration, runbooks, operational risks, and—when authorized—repository scaffolding/setup report containing URLs, baseline checks, limitations, and manual follow-up.
