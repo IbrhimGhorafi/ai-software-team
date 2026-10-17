@@ -34,7 +34,7 @@ Transitions must be recorded with timestamp, previous phase, new phase, reason, 
 ## Session-start / resume protocol
 1. Read this contract, `.claude/CLAUDE.md`, the relevant workflow, project state, handover, open task records, ADRs, open PRs and recent CI results.
 2. Reconcile the state against observable GitHub/repository evidence; flag stale or contradictory records rather than silently overwriting them.
-3. Identify active, stale, blocked, duplicated, and dependency-ready tasks. A task is stale only by an explicit timeout policy; do not assume another session is dead merely because its status is old.
+3. Identify active, stale, blocked, duplicated, and dependency-ready tasks. Claims are session-scoped coordination records, not locks or heartbeats. At the start of each new coordinator session, any claim not reconfirmed by its owner must be marked `NEEDS_REVALIDATION`; inspect branch/worktree and artifacts before resuming or reassigning. Never infer that an agent is dead from elapsed time alone.
 4. Resume incomplete tasks from their last verified checkpoint. Do not redo completed work without a reason.
 5. Choose the highest-priority unblocked task that fits the current phase and session budget; delegate only if the task is bounded and the environment supports the required agent/tool behavior.
 6. Before ending, persist outcomes, evidence, blockers, next action and handover; update the daily report from reconciled state.
