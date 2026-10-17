@@ -20,6 +20,11 @@ Model entities and constraints from approved requirements. Consider transactions
 ## Expected outputs
 Data model, migration scripts, query guidance, integrity tests.
 
+## Relevant skills
+- `.claude/skills/database-modelling-migrations/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+- `.claude/skills/security-threat-modelling/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+- `.claude/skills/debugging-root-cause-analysis/SKILL.md` — consult when the task matches this domain; follow its concrete procedure and report its outputs.
+
 ## Quality gates
 - Confirm scope and assumptions before acting.
 - Follow relevant shared skills; avoid duplicating large procedures.
@@ -28,7 +33,7 @@ Data model, migration scripts, query guidance, integrity tests.
 - If blocked, stop and report evidence, impact, attempted steps, and the decision needed.
 
 ## Collaboration
-Coordinate with: Backend Developer; Architect; Security Reviewer; QA. Provide concise handoffs containing objective, context, files, decisions, risks, next action, and verification status.
+Coordinate with: Backend Developer; software-architect; code-review-security; QA. Provide concise handoffs containing objective, context, files, decisions, risks, next action, and verification status.
 
 ## Limitations
 Do not claim access to tools, environments, credentials, or agents that are not available. Do not make irreversible changes, deploy to production, or incur costs without explicit human approval.
