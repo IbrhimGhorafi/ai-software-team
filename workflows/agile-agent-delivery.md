@@ -9,7 +9,7 @@
 - GitHub Projects is the planning board for the sprint. Keep status, priority, iteration, estimate, and owner visible when configured.
 - GitHub does not automatically know which local subagent was called, what it returned, or whether a local test ran unless that is recorded.
 - Every implementation task uses an isolated branch. Use a separate Git worktree per concurrently running coding agent where practical.
-- The AI Tech Lead reviews actual diffs and evidence. The repository owner/user alone performs the final merge; agents must never merge PRs or configure automation to merge on the user's behalf.
+- The `code-review-security` agent performs a read-only review of supplied diffs and evidence and returns findings. The coordinator records review disposition; the reviewer does not approve its own implementation. The repository owner/user alone performs the final merge; agents must never merge PRs or configure automation to merge on the user's behalf.
 
 ## End-to-end workflow from an idea
 
@@ -39,8 +39,8 @@ The user receives visibility and retains final PR merge authority. A request to 
 2. **Ready** — clear acceptance criteria, test expectations, and dependencies identified.
 3. **In Progress** — one primary implementation owner has claimed the task.
 4. **In Review** — a PR is open, linked to the issue, and evidence is supplied.
-5. **Changes Requested** — the Tech Lead found specific issues that need fixing.
-6. **Approved — Awaiting Human Merge** — Tech Lead approved the current revision and required checks pass.
+5. **Changes Requested** — the `code-review-security` report or coordinator verification found specific issues that need fixing.
+6. **Approved — Awaiting Human Merge** — The coordinator recorded review disposition as approved for the current revision and required checks pass.
 7. **Done** — the user merged the PR and the issue was verified/closed.
 8. **Blocked** — blocker, impact, attempted resolution, and needed decision/dependency are recorded.
 
@@ -69,7 +69,7 @@ Follow docs/agent-traceability.md. Assign IDs such as TASK-142-D01 for each suba
 
 ## Sprint cadence
 
-The Project Manager owns routine sprint planning and tracking. The Product Owner maintains product priorities; the Tech Lead checks technical feasibility; QA plans verification. Record sprint goals and changes in GitHub. Do not block routine, already-scoped work on repeated user approvals. At sprint end, report merged outcomes separately from open PRs and unfinished work.
+The `project-manager` role owns routine sprint planning and tracking. The `product-owner` maintains product priorities; `software-architect` checks technical feasibility; `qa-automation` plans verification. The main session remains the actual delegation coordinator. Record sprint goals and changes in GitHub. Do not block routine, already-scoped work on repeated user approvals. At sprint end, report merged outcomes separately from open PRs and unfinished work.
 
 ## Task claiming and local execution
 
@@ -98,7 +98,7 @@ Task claiming is a coordination protocol implemented by the main session and iss
 - [ ] No secrets, credentials, or generated clutter are included.
 - [ ] PR has not been merged.
 
-## AI Tech Lead review protocol
+## Coordinator review protocol
 
 Review the current PR diff, not merely the developer summary. Verify correctness, acceptance criteria, architecture, test quality, security/privacy, dependency changes, maintainability, CI status, evidence, and unresolved review threads. If changes are needed, request changes with actionable findings, severity, affected file/line, and expected resolution. Approve only when the current revision is acceptable and evidence supports it. If formal GitHub reviews are unavailable, label the report as a comment and do not claim a formal approval. Approval is not merge authorization.
 
@@ -108,4 +108,4 @@ Proposals must explain the current problem and evidence, expected benefit/measur
 
 ## Automation boundaries
 
-Safe candidates: static validation, explicit status updates, sprint summaries, and PR-ready notifications. Human-controlled actions: final merge, production deployment, destructive/irreversible operations, permission changes, secret exposure, and spending/enabling paid services. CI and Tech Lead review support the user's decision; neither replaces it.
+Safe candidates: static validation, explicit status updates, sprint summaries, and PR-ready notifications. Human-controlled actions: final merge, production deployment, destructive/irreversible operations, permission changes, secret exposure, and spending/enabling paid services. CI and read-only reviewer findings support the user's decision; neither replaces it.

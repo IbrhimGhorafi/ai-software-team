@@ -15,6 +15,10 @@ Precedence when records disagree:
 
 Every project state snapshot must include: project ID/name, last reconciled timestamp (UTC), current phase, goal/scope, approved decisions and ADR links, assumptions, task IDs/status/owner/dependencies, active delegation IDs, PRs, CI/test evidence, blockers, sponsor decisions needed, next actions, and last known commit. If GitHub is unavailable, use a local state file and say that remote sync is unavailable.
 
+## Threat-model checkpoint
+
+During `ARCHITECTURE`, before implementation begins, require a documented threat-model checkpoint whenever the system handles authentication/authorization, personal or sensitive data, external integrations/webhooks, file uploads, payment flows, secrets, or privileged operations. Use `.claude/skills/security-threat-modelling/SKILL.md`. Record assets, trust boundaries, abuse cases, mitigations, residual risks, and verification tasks. If the scope has no meaningful security-sensitive data flow, record `NOT APPLICABLE` with a short rationale.
+
 ## State machine
 Project phases:
 - `DISCOVERY`: capture idea, goals, users, outcomes, constraints.
@@ -34,7 +38,7 @@ Transitions must be recorded with timestamp, previous phase, new phase, reason, 
 ## Session-start / resume protocol
 1. Read this contract, `.claude/CLAUDE.md`, the relevant workflow, project state, handover, open task records, ADRs, open PRs and recent CI results.
 2. Reconcile the state against observable GitHub/repository evidence; flag stale or contradictory records rather than silently overwriting them.
-3. Identify active, stale, blocked, duplicated, and dependency-ready tasks. A task is stale only by an explicit timeout policy; do not assume another session is dead merely because its status is old.
+3. Identify active, stale, blocked, duplicated, and dependency-ready tasks. Claims are session-scoped coordination records, not locks or heartbeats. At the start of each new coordinator session, any claim not reconfirmed by its owner must be marked `NEEDS_REVALIDATION`; inspect branch/worktree and artifacts before resuming or reassigning. Never infer that an agent is dead from elapsed time alone.
 4. Resume incomplete tasks from their last verified checkpoint. Do not redo completed work without a reason.
 5. Choose the highest-priority unblocked task that fits the current phase and session budget; delegate only if the task is bounded and the environment supports the required agent/tool behavior.
 6. Before ending, persist outcomes, evidence, blockers, next action and handover; update the daily report from reconciled state.
@@ -42,22 +46,30 @@ Transitions must be recorded with timestamp, previous phase, new phase, reason, 
 ## Task ownership and concurrency
 - Give each task a stable ID and each delegation a unique ID, e.g. `STORY-12-D02`.
 - Task record must state one accountable owner, dependencies, allowed paths/files, input commit, outputs, acceptance checks, and status.
-- Allowed statuses: `BACKLOG`, `READY`, `CLAIMED`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED_AWAITING_HUMAN_MERGE`, `DONE`, `CANCELLED`.
+- Canonical task statuses: `BACKLOG`, `READY`, `CLAIMED`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED_AWAITING_HUMAN_MERGE`, `DONE`, `CANCELLED`. `UNKNOWN` is a reconciliation observation only; `NEEDS_REVALIDATION` is a claim flag, not a task status. GitHub Project labels such as `Ready to Claim` must map to canonical `READY` in the task record.
 - A claim is not a real lock unless backed by a mechanism with atomic exclusivity. GitHub labels/comments and markdown records are coordination conventions, not distributed locks. If no lock service exists, use a single-writer policy: one coordinator assigns one coding task per shared working tree, records owner/branch, and does not dispatch overlapping file ownership. Parallel work requires separate branches/worktrees and non-overlapping ownership.
 - Never let two coding agents edit the same working tree or the same owned files concurrently. If ownership conflict appears, pause the later task, preserve both results separately, and ask the coordinator to reconcile.
-- Claims must include claimed-at and heartbeat/checkpoint time. A stale claim must be explicitly revalidated before reassignment; do not auto-steal it solely from elapsed time.
+- Claims record `claimed-at`, last observed checkpoint, owner, branch/worktree, and allowed paths. Do not promise heartbeat/timeout behavior unless a real mechanism exists. At the next coordinator session, reconfirm ownership and inspect artifacts before resuming or reassigning; do not auto-steal a claim solely because time elapsed.
 - Agents return: delegation ID, status, changed paths, commit/branch, checks actually run and their results, evidence links, risks, unresolved items, and next recommendation. The coordinator verifies repository state before marking work complete.
+
+## Session and cost budget defaults
+
+- Default maximum: **3 active delegations per coordinator session**, including research/review work. The coordinator may lower this for complex tasks or a tight context budget; raise it only when the work is independent and verification capacity remains.
+- Default implementation WIP: **one active coding delegation per shared working tree**. Parallel coding is allowed only in separate worktrees/branches with non-overlapping allowed paths; default maximum is **2 concurrent coding delegations** unless the human owner approves a higher limit for a specific session.
+- Before delegating, record the task's expected output, stopping condition, and verification budget. Prefer the least costly model that is actually available and suitable in the current runtime; never assume model IDs or pricing.
+- Record observed token use, cost, and duration only when the runtime exposes reliable values. Otherwise record `unavailable`; do not fabricate estimates as measurements.
+- Stop starting new work when context or time pressure could prevent verification, evidence capture, or a useful handover.
 
 ## Retry, failure and recovery
 - On a failed task, preserve logs/evidence, identify the failing acceptance check, and classify as code defect, environment/tool issue, unclear requirement, dependency, or external access.
 - Permit at most two automatic retries for the same unchanged failure. Each retry must change one relevant condition or strategy; otherwise stop and report blocked. Do not loop indefinitely or burn context/tokens.
-- On agent timeout/disappearance, mark `BLOCKED` or `UNKNOWN`, inspect the branch and working tree, and preserve partial work. Reassign only after confirming no concurrent writer and documenting the handover.
+- If an agent fails to return in the current session, mark `BLOCKED` and preserve partial work. Use `UNKNOWN` only as a reconciliation observation, not a task status. At session resume, inspect the branch/worktree and reconfirm ownership before reassignment; document the handover.
 - If CI fails, inspect the failing job and logs, reproduce when practical, and never downgrade or bypass required checks merely to make the PR green.
 - If requirements or architecture conflict, stop dependent work, record the conflict and impact, and resolve via the role owner or sponsor decision gate.
 - On context/token pressure, stop starting new work, persist the checkpoint and handover, and report what remains. Never claim the overall project is complete because the budget or session ended.
 
 ## Quality and merge gate
-A task can enter review only when its acceptance checks and relevant tests have evidence. Review must inspect the actual diff, test results, security/privacy impact, docs/config changes, and compatibility. QA reports tested and not-tested scope. The Tech Lead records review disposition and blocking findings. A PR may be labelled ready only when required CI checks pass and the evidence is linked; if checks are unavailable, state that explicitly and do not imply they passed.
+A task can enter review only when its acceptance checks and relevant tests have evidence. Review must inspect the actual diff, test results, security/privacy impact, docs/config changes, and compatibility. QA reports tested and not-tested scope. The `code-review-security` agent produces a read-only review report with findings and evidence. The coordinator records the review disposition in the delegation/PR record; the reviewer never approves its own implementation. The Architect may advise on architecture, but no separate Tech Lead agent is assumed. A PR may be labelled ready only when required CI checks pass and the evidence is linked; if checks are unavailable, state that explicitly and do not imply they passed.
 
 Only the human repository owner merges PRs. Agents must not merge, enable auto-merge, push directly to the default branch, deploy production, or change repository permissions. Documentation is not enforcement: verify GitHub branch protection/rulesets and repository permissions separately.
 
@@ -81,6 +93,10 @@ Proceed with documented assumptions for routine and reversible choices. Pause an
 - accepting material security/privacy risk or making a significant scope/business commitment.
 
 Ask one concise question containing the decision, recommended option, alternatives, cost/risk and what work can continue safely meanwhile.
+
+## High-risk command gate
+
+Before running any command that can mutate external state, credentials, infrastructure, production data, remote repositories, permissions, or published artifacts, the coordinator must classify the command and check explicit authorization. Examples include `gh repo create`, mutating `gh api` calls, `terraform apply/destroy`, cloud CLI writes, `kubectl apply/delete`, database destructive DDL/data deletion, `docker push`, deployment/publish commands, and secret/credential access. Do not run such commands unless the exact action and target are authorized. Prefer read-only inspection and dry-run/plan modes first. Existing Claude Code deny rules are defense-in-depth only; they are not a complete security boundary, and shell commands can bypass naive text patterns. Validate actual behavior in a real Claude Code session before claiming enforcement.
 
 ## Acceptance checklist for a usable orchestration run
 - [ ] State reconciled against current repository, issues, PRs and CI.

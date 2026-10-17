@@ -38,8 +38,10 @@ Use templates/agent-delegation-template.md. Never record private chain-of-though
 
 Keep task, code, verification, and release states distinct.
 
-- **Task:** Backlog, Ready, In Progress, In Review, Changes Requested, Approved — Awaiting Human Merge, Done, Blocked.
-- **Delegation:** queued, running, completed, partial, blocked, failed, cancelled, rejected.
+- **Task:** `BACKLOG`, `READY`, `CLAIMED`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED_AWAITING_HUMAN_MERGE`, `DONE`, `CANCELLED` (same canonical vocabulary as `workflows/orchestration-contract.md`).
+- **Claim validation:** `CONFIRMED` or `NEEDS_REVALIDATION`; this is a claim flag, not a task status.
+- **Reconciliation observation:** `UNKNOWN` may describe unavailable status evidence but is not a task status.
+- **Delegation:** queued, running, completed, partial, blocked, failed, cancelled, rejected (recorded as a delegation result, not a task status).
 - **Implementation:** not started, local change, committed, PR open.
 - **Verification:** not run, running, passed, failed, partially passed, unavailable.
 - **Integration/release:** awaiting human merge, merged, deployment pending, deployed, deployment verified.
@@ -52,7 +54,7 @@ A delegation can be completed while its output is still unreviewed. A PR can be 
 1. Read the task, repo instructions, acceptance criteria, relevant decisions, and current state.
 2. Confirm readiness, dependencies, and file ownership.
 3. Create a unique delegation ID.
-4. State inputs, output contract, acceptance checks, and allowed scope.
+4. State inputs, output contract, acceptance checks, exact allowed paths, selected shared skill(s), and the reason they apply.
 5. Record the delegation as queued/running in the issue or local activity log.
 
 ### After delegation
@@ -60,8 +62,8 @@ A delegation can be completed while its output is still unreviewed. A PR can be 
 2. Inspect the changed files/diff and evidence relevant to the acceptance criteria.
 3. Decide whether to accept, request changes, mark partial, or escalate.
 4. Link artifacts and update task/project status.
-5. If the agent failed or did not return, record that accurately and choose a retry, alternative, or blocker.
-6. Ensure only one implementation owner edits a given working tree at a time.
+5. If the agent failed or did not return, record that accurately and choose a retry, alternative, or blocker. On a new coordinator session, mark unreconfirmed claims `NEEDS_REVALIDATION` and inspect their branch/worktree before resuming or reassigning.
+6. Ensure only one implementation owner edits a given working tree at a time. Compare `git diff --name-only` against allowed paths before accepting output; treat this as coordinator verification, not a runtime sandbox.
 
 ### At session end
 Reconcile every delegation from the session. No delegation may disappear from the report merely because its output was incomplete. Update the project-state summary and handover; list the next 1–3 actions.

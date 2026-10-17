@@ -206,6 +206,23 @@ check_agent_tools(agents)
 check_unique_names(agents, "agent")
 check_unique_names(skills, "skill")
 
+# Cross-reference checks keep agent/skill wiring from silently drifting.
+skill_paths = {path.resolve() for path in skills}
+for path in agents:
+    body = read_text(path)
+    if "## Relevant skills" not in body:
+        errors.append(f"Agent is missing a Relevant skills section: {path.relative_to(ROOT)}")
+    for reference in re.findall(r"`(\.claude/skills/[^\`]+/SKILL\.md)`", body):
+        target = (ROOT / reference).resolve()
+        if target not in skill_paths or not target.is_file():
+            errors.append(f"Agent references a missing skill '{reference}': {path.relative_to(ROOT)}")
+
+claude_instructions = read_text(ROOT / ".claude" / "CLAUDE.md")
+for path in skills:
+    reference = path.relative_to(ROOT).as_posix()
+    if reference not in claude_instructions:
+        errors.append(f"Shared skill is missing from the skill routing index: {reference}")
+
 for path in agents:
     body = read_text(path).split("---", 2)
     if len(body) < 3 or len(body[2].strip()) < 80:
@@ -279,7 +296,9 @@ if settings_text:
             "Bash(git push origin main*)", "Bash(git push origin HEAD:main*)",
             "Bash(git reset --hard*)", "Bash(git clean*)",
             "Bash(gh repo delete*)", "Bash(gh pr merge*)",
-            "Bash(rm -rf*)", "Read(./.env)",
+            "Bash(rm -rf*)", "Bash(gh repo create*)", "Bash(terraform apply*)", "Bash(terraform destroy*)",
+            "Bash(kubectl apply*)", "Bash(kubectl delete*)", "Bash(docker push*)",
+            "Bash(cat .env*)", "Bash(cat */.env*)", "Read(./.env)",
         )
         for rule in required_denies:
             if rule not in deny:

@@ -1,19 +1,23 @@
 ---
 name: user-stories-acceptance-criteria
-description: Write small, testable user stories.
+description: Use when creating small stories and testable acceptance criteria.
 ---
 
 # Write small, testable user stories
 
 ## When to use
-Use this skill when the task involves write small, testable user stories.
+Use this skill when converting requirements into backlog items, splitting oversized work, or preparing stories for sprint commitment.
+
 
 ## Procedure
 Describe user, capability, and value. Add Given/When/Then acceptance criteria, edge cases, dependencies, and test notes. Ensure stories are independently reviewable and small enough to complete within a planned increment.
 
+## Expected outputs
+- Story with user, capability, and value
+- Given/When/Then acceptance criteria including relevant edge cases
+- Dependencies, test notes, and clear ready/not-ready decision
+
 ## Quality checks
-- Confirm scope, assumptions, and relevant constraints.
-- Follow the shared instructions in `.claude/CLAUDE.md` and applicable files under `standards/`.
-- Prefer small, reversible changes and preserve traceability to requirements.
-- Run appropriate checks when available and report exact observed results; never claim unrun checks passed.
-- Identify risks, open questions, and next actions explicitly.
+- Keep each story independently reviewable and small enough for the planned increment.
+- Acceptance criteria must be observable and avoid implementation-only wording unless required.
+- Record dependencies and test expectations before marking a story Ready.

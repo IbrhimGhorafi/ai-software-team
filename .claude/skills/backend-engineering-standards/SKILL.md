@@ -1,19 +1,23 @@
 ---
 name: backend-engineering-standards
-description: Implement maintainable and secure backend behavior.
+description: Use when implementing server-side business logic, APIs, or authorization.
 ---
 
 # Implement maintainable and secure backend behavior
 
 ## When to use
-Use this skill when the task involves implement maintainable and secure backend behavior.
+Use this skill for server-side behavior, endpoints, integrations, data access, and authorization-sensitive code.
+
 
 ## Procedure
 Keep business rules testable, validate at trust boundaries, authorize every sensitive operation server-side, handle errors consistently, avoid leaking secrets, and test normal and failure paths. Do not assume a framework.
 
+## Expected outputs
+- Small implementation scoped to approved behavior
+- Tests for normal, invalid, unauthorized, and failure paths as relevant
+- Notes on API/data contract changes and unresolved risks
+
 ## Quality checks
-- Confirm scope, assumptions, and relevant constraints.
-- Follow the shared instructions in `.claude/CLAUDE.md` and applicable files under `standards/`.
-- Prefer small, reversible changes and preserve traceability to requirements.
-- Run appropriate checks when available and report exact observed results; never claim unrun checks passed.
-- Identify risks, open questions, and next actions explicitly.
+- Validate untrusted inputs at server-side trust boundaries.
+- Enforce authorization on the server for each sensitive operation.
+- Avoid exposing credentials, personal data, or internal error details in logs/responses.

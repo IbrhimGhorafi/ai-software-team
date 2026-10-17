@@ -1,19 +1,23 @@
 ---
 name: agile-planning
-description: Plan small, reviewable increments.
+description: Use when sequencing work, planning a sprint, or managing delivery dependencies.
 ---
 
 # Plan small, reviewable increments
 
 ## When to use
-Use this skill when the task involves plan small, reviewable increments.
+Use this skill before selecting sprint scope, splitting work, sequencing dependencies, or resolving a delivery blocker.
+
 
 ## Procedure
 Clarify the goal, capacity, dependencies, risks, and acceptance checks. Break work into sprint-sized slices with clear ownership. Track blockers and scope changes; do not start a sprint without explicit approval.
 
+## Expected outputs
+- Sprint goal and bounded scope, with explicit exclusions
+- Ordered tasks with owners, dependencies, acceptance checks, and WIP assumptions
+- Blockers, risks, capacity assumptions, and next actions
+
 ## Quality checks
-- Confirm scope, assumptions, and relevant constraints.
-- Follow the shared instructions in `.claude/CLAUDE.md` and applicable files under `standards/`.
-- Prefer small, reversible changes and preserve traceability to requirements.
-- Run appropriate checks when available and report exact observed results; never claim unrun checks passed.
-- Identify risks, open questions, and next actions explicitly.
+- Reject work without testable acceptance checks or a named owner.
+- Keep WIP explicit; default to one implementation delegation per shared working tree.
+- Record scope changes and decisions rather than silently expanding the sprint.

@@ -197,5 +197,47 @@ class ValidatorRegressionTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("full commit SHAs", result.stdout)
 
+
+    def test_validator_rejects_agent_reference_to_missing_skill(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            path = copy / ".claude/agents/backend-developer.md"
+            text = path.read_text(encoding="utf-8").replace(
+                ".claude/skills/backend-engineering-standards/SKILL.md",
+                ".claude/skills/does-not-exist/SKILL.md",
+            )
+            path.write_text(text, encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("references a missing skill", result.stdout)
+
+    def test_validator_rejects_agent_without_skill_routing_section(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            path = copy / ".claude/agents/documentation-manager.md"
+            text = path.read_text(encoding="utf-8")
+            start = text.index("## Relevant skills")
+            end = text.index("## Evidence contract", start)
+            path.write_text(text[:start] + text[end:], encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("missing a Relevant skills section", result.stdout)
+
+
+    def test_validator_rejects_missing_high_risk_command_deny(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            settings_path = copy / ".claude/settings.json"
+            import json
+            settings = json.loads(settings_path.read_text(encoding="utf-8"))
+            settings["permissions"]["deny"].remove("Bash(terraform apply*)")
+            settings_path.write_text(json.dumps(settings), encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("Bash(terraform apply*)", result.stdout)
+
 if __name__ == "__main__":
     unittest.main()

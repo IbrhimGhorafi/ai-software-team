@@ -4,6 +4,8 @@ description: Review a pull request for correctness, security, and evidence
 
 # Review PR
 
+Use `code-review-security` for the independent read-only assessment. Select `code-review-refactoring`, `security-threat-modelling`, and `git-github-workflows` skills as applicable.
+
 1. The coordinator must obtain the actual diff for the target PR and pass the diff, changed-file list, requirements/acceptance criteria, and observed CI/test results to the delegated read-only reviewer. Do not ask the reviewer to infer a diff it cannot access.
 2. Inspect the actual diff, target branch, linked story/requirements, and changed-file scope from the supplied evidence.
 3. Check correctness, edge cases, security/privacy, secrets, permissions, backwards compatibility, maintainability, and test adequacy.

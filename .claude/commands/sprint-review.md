@@ -3,6 +3,9 @@ description: Review sprint outcomes, acceptance feedback, and remaining risks
 ---
 
 # Sprint review
+Ask `qa-automation` for verification evidence and `project-manager` for delivery state; the coordinator reconciles source records and prepares the review. Use `test-strategy-automation` and `agile-planning` skills as relevant.
+
+
 
 Review the completed sprint with the human sponsor and delivery team.
 

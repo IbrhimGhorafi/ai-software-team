@@ -3,7 +3,13 @@
 - **Delegation ID:** `TASK-<issue-id>-D<sequence>`
 - **Task / Issue:** 
 - **Agent role:** 
-- **Status:** queued / running / completed / partial / blocked / failed / cancelled / rejected
+- **Task status:** BACKLOG / READY / CLAIMED / IN_PROGRESS / BLOCKED / IN_REVIEW / CHANGES_REQUESTED / APPROVED_AWAITING_HUMAN_MERGE / DONE / CANCELLED
+- **Delegation result:** queued / running / completed / partial / blocked / failed / cancelled / rejected
+- **Claim validation:** CONFIRMED / NEEDS_REVALIDATION
+- **Claimed at (observed):**
+- **Last checkpoint (observed):**
+- **Branch / worktree:**
+- **Allowed paths (exact directories/files):**
 - **Started at (observed):** 
 - **Returned at (observed):** 
 
@@ -19,6 +25,19 @@ What outcome is requested?
 - Acceptance checks:
 - Dependencies:
 - Exclusive file ownership / branch / worktree:
+
+## Standard agent return (copy the fields below into the coordinator record)
+- **Delegation ID:**
+- **Delegation result:**
+- **Changed paths:**
+- **Commit / branch:**
+- **Checks actually run and results:**
+- **Evidence links:**
+- **Risks / unresolved items:**
+- **Observed token usage:** unavailable unless exposed by the runtime
+- **Observed cost:** unavailable unless exposed by the runtime
+- **Observed duration:**
+- **Next recommendation:**
 
 ## Result reported by agent
 Summarize only the actual response and artifacts returned. Do not treat an agent's claim as independent verification.

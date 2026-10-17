@@ -1,19 +1,23 @@
 ---
 name: frontend-engineering-standards
-description: Build accessible and robust interfaces.
+description: Use when implementing UI components, client behavior, or accessibility.
 ---
 
 # Build accessible and robust interfaces
 
 ## When to use
-Use this skill when the task involves build accessible and robust interfaces.
+Use this skill when building or changing user-facing screens, components, client-side state, forms, or browser interactions.
+
 
 ## Procedure
 Implement responsive, semantic UI with keyboard accessibility and clear loading, empty, error, success, and validation states. Keep components focused and test key interactions. Never rely on client checks for authorization.
 
+## Expected outputs
+- Accessible UI implementation and focused component/interaction tests
+- Loading, empty, error, success, and validation states as applicable
+- Responsive behavior and known accessibility/UX gaps
+
 ## Quality checks
-- Confirm scope, assumptions, and relevant constraints.
-- Follow the shared instructions in `.claude/CLAUDE.md` and applicable files under `standards/`.
-- Prefer small, reversible changes and preserve traceability to requirements.
-- Run appropriate checks when available and report exact observed results; never claim unrun checks passed.
-- Identify risks, open questions, and next actions explicitly.
+- Use semantic controls and keyboard-accessible interactions.
+- Do not rely on client-side checks to enforce authorization.
+- Test critical interaction paths and visible failure states.
