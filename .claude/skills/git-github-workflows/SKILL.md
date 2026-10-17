@@ -1,19 +1,23 @@
 ---
 name: git-github-workflows
-description: Make safe and reviewable Git changes.
+description: Use when branching, committing, opening PRs, or managing GitHub changes.
 ---
 
 # Make safe and reviewable Git changes
 
 ## When to use
-Use this skill when the task involves make safe and reviewable git changes.
+Use this skill for repository changes, branch/commit strategy, pull requests, CI review, or GitHub coordination.
+
 
 ## Procedure
 Inspect status and diffs before changes. Use focused branches and descriptive commits, avoid committing secrets, never rewrite shared history without approval, and report checks skipped. Push only when explicitly authorized.
 
+## Expected outputs
+- Focused branch/commit/PR references and changed-path summary
+- Exact checks run and checks skipped with reasons
+- Review/merge state and follow-up actions, based on observed GitHub evidence
+
 ## Quality checks
-- Confirm scope, assumptions, and relevant constraints.
-- Follow the shared instructions in `.claude/CLAUDE.md` and applicable files under `standards/`.
-- Prefer small, reversible changes and preserve traceability to requirements.
-- Run appropriate checks when available and report exact observed results; never claim unrun checks passed.
-- Identify risks, open questions, and next actions explicitly.
+- Inspect status and diff before committing; keep unrelated changes out.
+- Never place tokens/secrets in commits and never rewrite shared history without approval.
+- Push only when authorized; never merge or enable auto-merge on the user's behalf.
