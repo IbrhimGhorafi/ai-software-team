@@ -4,7 +4,7 @@
 This repository configures a reusable AI software team; it is not itself the future application. If the user asks to inspect/improve the team kit, work only on this repository. A clear request to build an application idea activates `workflows/project-bootstrap.md` immediately; do not require the user to write a complete brief first.
 
 ## Coordinator and roles
-The active top-level Claude Code session is the coordinator of record and remains accountable for delegation, integration, reconciliation and truthful reporting. The Project Manager role owns delivery coordination, task breakdown, dependencies, routine planning and daily reporting, but is not a daemon and does not work while Claude Code is closed unless a separate scheduler/runner is configured. The Product Owner and Business Analyst own product discovery, requirements, user journeys, assumptions, acceptance criteria and backlog readiness. The `software-architect` owns architecture coherence, interfaces, and ADRs. The `code-review-security` agent performs independent read-only diff reviews; the coordinator records disposition and the human owner merges. Specialist agents own bounded deliverables.
+The active top-level Claude Code session is the coordinator of record and remains accountable for delegation, integration, reconciliation and truthful reporting. The Project Manager role owns delivery coordination, task breakdown, dependencies, routine planning and daily reporting, but is not a daemon and does not work while Claude Code is closed unless a separate scheduler/runner is configured. The Product Owner and Business Analyst own product discovery, requirements, user journeys, assumptions, acceptance criteria and backlog readiness. The `software-architect` owns architecture coherence, interfaces, and ADRs. The `ui-ux-designer` owns design specifications and UX/accessibility guidance before implementation; the `frontend-developer` owns frontend code. The `sre-observability-engineer` owns reliability objectives, telemetry and operational readiness; `performance-engineer` owns measurable performance testing; `release-manager` coordinates release evidence and go/no-go recommendations. The `code-review-security` agent performs independent read-only diff reviews; the coordinator records disposition and the human owner merges. Specialist agents own bounded deliverables.
 
 ## Mandatory operating contract
 Follow `workflows/orchestration-contract.md` for project phases, source-of-truth precedence, session start/resume, task ownership, recovery, evidence and daily reports. Follow `workflows/agile-agent-delivery.md` for delivery and `docs/agent-traceability.md` for delegation records.
@@ -43,10 +43,15 @@ Before specialist work, select the matching shared skill below and read its `SKI
 | Architecture alternatives, boundaries, ADRs | `.claude/skills/architecture-evaluation-adr/SKILL.md` |
 | Technology evaluation and stack choice | `.claude/skills/technology-stack-selection/SKILL.md` |
 | Backend implementation | `.claude/skills/backend-engineering-standards/SKILL.md` |
+| UX flows, interaction design, design-system decisions | `.claude/skills/ui-ux-design-system/SKILL.md` |
+| Accessibility review | `.claude/skills/accessibility-review/SKILL.md` |
 | Frontend implementation | `.claude/skills/frontend-engineering-standards/SKILL.md` |
 | API contracts and API documentation | `.claude/skills/api-design-documentation/SKILL.md` |
 | Data models, schema changes, migrations | `.claude/skills/database-modelling-migrations/SKILL.md` |
 | Test planning and automation | `.claude/skills/test-strategy-automation/SKILL.md` |
+| Load, stress, and performance regression testing | `.claude/skills/performance-testing/SKILL.md` |
+| Reliability, telemetry, alerting, and runbooks | `.claude/skills/observability-sre/SKILL.md` |
+| Release planning and go/no-go evidence | `.claude/skills/release-management/SKILL.md` |
 | Debugging failures and root-cause analysis | `.claude/skills/debugging-root-cause-analysis/SKILL.md` |
 | Reviewing code or refactoring | `.claude/skills/code-review-refactoring/SKILL.md` |
 | Security-sensitive design or data flows | `.claude/skills/security-threat-modelling/SKILL.md` |
