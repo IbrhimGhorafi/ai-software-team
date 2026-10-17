@@ -1,6 +1,6 @@
 ---
 name: devops-platform
-description: Design repeatable development, CI/CD, container, infrastructure, and operational workflows; own approved repository scaffolding when authorized.
+description: Use when changing CI/CD, containers, infrastructure, operations, or approved repository setup.
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
