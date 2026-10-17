@@ -14,7 +14,7 @@ import os
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED_TOOLS = {"Read", "Grep", "Glob", "Edit", "Write", "Bash", "WebSearch", "WebFetch"}
-HARD_MINIMUMS = {"agents": 12, "skills": 18}
+HARD_MINIMUMS = {"agents": 16, "skills": 22}
 MANIFEST_PATH = ROOT / ".claude" / "manifest.json"
 errors: list[str] = []
 
