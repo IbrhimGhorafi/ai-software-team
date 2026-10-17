@@ -16,3 +16,5 @@ Notable changes to this starter kit are recorded here.
 - Add sprint review, retrospective, and release-readiness commands and templates.
 - Add weekly Dependabot updates for GitHub Actions.
 - Add GitHub pull request template, CODEOWNERS, security policy, and contribution guidance.
+- Harden Claude Code permission guardrails: close git-push flag/refspec gaps, add recursive-delete and credential-exposure denies, add `Edit` protections for secret files, add `ask` confirmation for settings, workflows, CODEOWNERS and risky `gh` commands.
+- Validate `ask`/`allow` rule structure and add simulated rule-matching and validator negative tests (`tests/test_security_guardrails.py`); document limits in `docs/security-guardrails.md`.
