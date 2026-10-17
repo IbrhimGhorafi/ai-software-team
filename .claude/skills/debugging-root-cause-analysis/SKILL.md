@@ -1,19 +1,23 @@
 ---
 name: debugging-root-cause-analysis
-description: Find root causes with evidence.
+description: Use when diagnosing a reproducible defect or unstable test.
 ---
 
 # Find root causes with evidence
 
 ## When to use
-Use this skill when the task involves find root causes with evidence.
+Use this skill for a bug, failing check, flaky test, unexpected behavior, or recurring incident.
+
 
 ## Procedure
 Reproduce the issue, capture observable evidence, narrow hypotheses, and change one variable at a time. Distinguish root cause from symptoms. Add a regression check and document what was verified.
 
+## Expected outputs
+- Reproduction steps and observable evidence
+- Ranked hypotheses with the evidence that supports or rejects each
+- Root cause, minimal fix, regression check, and remaining uncertainty
+
 ## Quality checks
-- Confirm scope, assumptions, and relevant constraints.
-- Follow the shared instructions in `.claude/CLAUDE.md` and applicable files under `standards/`.
-- Prefer small, reversible changes and preserve traceability to requirements.
-- Run appropriate checks when available and report exact observed results; never claim unrun checks passed.
-- Identify risks, open questions, and next actions explicitly.
+- Reproduce before changing code when practical; preserve logs and exact commands.
+- Change one relevant variable at a time and distinguish symptoms from causes.
+- Add a regression check and report when reproduction or verification was impossible.
