@@ -8,10 +8,13 @@ validation cannot prove Claude Code runtime behavior or GitHub owner settings.
 from pathlib import Path
 import json
 import re
+import subprocess
 import sys
+import os
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED_TOOLS = {"Read", "Grep", "Glob", "Edit", "Write", "Bash", "WebSearch", "WebFetch"}
+HARD_MINIMUMS = {"agents": 12, "skills": 18}
 MANIFEST_PATH = ROOT / ".claude" / "manifest.json"
 errors: list[str] = []
 
@@ -25,6 +28,9 @@ def load_manifest() -> dict:
         return {}
     if manifest.get("schema_version") != 1:
         errors.append("Unsupported or missing manifest schema_version (expected 1)")
+    if not isinstance(manifest, dict):
+        errors.append("Manifest root must be a JSON object")
+        return {}
     inventory = manifest.get("inventory")
     if not isinstance(inventory, dict):
         errors.append("Manifest inventory must be an object")
@@ -36,16 +42,49 @@ def load_manifest() -> dict:
             continue
         if not isinstance(spec.get("directory"), str) or not isinstance(spec.get("pattern"), str):
             errors.append(f"Manifest inventory.{kind} must define string directory and pattern")
+        else:
+            directory = Path(spec["directory"])
+            if directory.is_absolute() or ".." in directory.parts:
+                errors.append(f"Manifest inventory.{kind}.directory must stay inside the repository")
         if kind in ("agents", "skills"):
             count = spec.get("minimum_count")
-            if not isinstance(count, int) or isinstance(count, bool) or count < 1:
-                errors.append(f"Manifest inventory.{kind}.minimum_count must be a positive integer")
+            if not isinstance(count, int) or isinstance(count, bool) or count < HARD_MINIMUMS[kind]:
+                errors.append(f"Manifest inventory.{kind}.minimum_count must be at least the hard floor {HARD_MINIMUMS[kind]}")
         else:
             required = spec.get("required")
             if not isinstance(required, list) or not all(isinstance(item, str) and item.strip() for item in required):
                 errors.append(f"Manifest inventory.{kind}.required must be a list of non-empty filenames")
             elif len(required) != len(set(required)):
                 errors.append(f"Manifest inventory.{kind}.required contains duplicate filenames")
+            elif any(Path(item).name != item or item in {".", ".."} for item in required):
+                errors.append(f"Manifest inventory.{kind}.required entries must be plain filenames")
+    # CI supplies the target branch to prevent silent manifest shrinkage in a PR.
+    base_ref = os.environ.get("MANIFEST_BASE_REF", "").strip()
+    if base_ref:
+        try:
+            baseline_raw = subprocess.run(
+                ["git", "show", f"{base_ref}:.claude/manifest.json"],
+                cwd=ROOT, capture_output=True, text=True, check=True, timeout=5,
+            ).stdout
+            baseline = json.loads(baseline_raw)
+            baseline_inventory = baseline.get("inventory", {})
+            for kind, old_spec in baseline_inventory.items():
+                new_spec = inventory.get(kind, {}) if isinstance(inventory, dict) else {}
+                if kind in HARD_MINIMUMS:
+                    old_min = old_spec.get("minimum_count", HARD_MINIMUMS[kind])
+                    new_min = new_spec.get("minimum_count", 0)
+                    if isinstance(old_min, int) and not isinstance(old_min, bool) and (
+                        not isinstance(new_min, int) or isinstance(new_min, bool) or new_min < old_min
+                    ):
+                        errors.append(f"Manifest inventory.{kind}.minimum_count may not decrease from base ({old_min})")
+                old_required = old_spec.get("required", [])
+                new_required = new_spec.get("required", [])
+                if isinstance(old_required, list) and isinstance(new_required, list):
+                    removed = sorted(set(old_required) - set(new_required))
+                    if removed:
+                        errors.append(f"Manifest inventory.{kind}.required may not remove base entries: {', '.join(removed)}")
+        except (subprocess.SubprocessError, OSError, json.JSONDecodeError, AttributeError, TypeError) as exc:
+            errors.append(f"Cannot compare manifest with base ref {base_ref!r}: {exc}")
     return inventory
 
 
@@ -78,6 +117,11 @@ def inventory_paths(kind: str) -> list[Path]:
     if not isinstance(directory, str) or not isinstance(pattern, str):
         return []
     folder = ROOT / directory
+    try:
+        folder.resolve().relative_to(ROOT.resolve())
+    except (OSError, ValueError):
+        errors.append(f"Manifest inventory.{kind}.directory resolves outside the repository")
+        return []
     return sorted(folder.glob(pattern)) if folder.is_dir() else []
 
 
@@ -171,6 +215,9 @@ for path in skills:
     text = require_nonempty(path, "skill")
     if len(text.splitlines()) < 8:
         errors.append(f"Skill content is suspiciously short: {path.relative_to(ROOT)}")
+    description = parse_frontmatter(path).get("description", "").strip()
+    if len(description) < 20 or description.casefold() in {"skill", "todo", "tbd", "x"}:
+        errors.append(f"Skill description is missing or too generic: {path.relative_to(ROOT)}")
 
 def check_required_files(kind: str, paths: list[Path]) -> None:
     spec = manifest_inventory.get(kind, {})
@@ -227,7 +274,10 @@ if settings_text:
         settings = json.loads(settings_text)
         deny = settings.get("permissions", {}).get("deny", [])
         required_denies = (
-            "Bash(git push --force*)", "Bash(gh pr merge*)",
+            "Bash(git push --force*)", "Bash(git push -f*)",
+            "Bash(git push origin main*)", "Bash(git push origin HEAD:main*)",
+            "Bash(git reset --hard*)", "Bash(git clean*)",
+            "Bash(gh repo delete*)", "Bash(gh pr merge*)",
             "Bash(rm -rf*)", "Read(./.env)",
         )
         for rule in required_denies:
@@ -249,11 +299,20 @@ if workflow_text:
         errors.append("Validation workflow must keep contents permission read-only")
     if "persist-credentials: false" not in workflow_text:
         errors.append("Validation workflow checkout must set persist-credentials: false")
+    if re.search(r"(?m)^\s*uses:\s*[^\n]+@(?:v?\d+(?:\.\d+){0,2}|main|master)\s*(?:#.*)?$", workflow_text):
+        errors.append("Validation workflow must pin actions to full commit SHAs")
 
 secret_workflow = ROOT / ".github" / "workflows" / "secret-scan.yml"
 secret_text = require_nonempty(secret_workflow, "secret scanning workflow")
-if secret_text and ("gitleaks" not in secret_text.casefold() or "pull_request:" not in secret_text):
-    errors.append("Secret scanning workflow must run Gitleaks on pull requests")
+if secret_text:
+    if "gitleaks" not in secret_text.casefold() or "pull_request:" not in secret_text:
+        errors.append("Secret scanning workflow must run Gitleaks on pull requests")
+    if not re.search(r"(?m)^\s*contents:\s*read\s*$", secret_text):
+        errors.append("Secret scanning workflow must keep contents permission read-only")
+    if "persist-credentials: false" not in secret_text:
+        errors.append("Secret scanning workflow checkout must set persist-credentials: false")
+    if re.search(r"(?m)^\s*uses:\s*[^\n]+@(?:v?\d+(?:\.\d+){0,2}|main|master)\s*(?:#.*)?$", secret_text):
+        errors.append("Secret scanning workflow must pin actions to full commit SHAs")
 
 dependabot_path = ROOT / ".github" / "dependabot.yml"
 dependabot_text = require_nonempty(dependabot_path, "Dependabot configuration")
