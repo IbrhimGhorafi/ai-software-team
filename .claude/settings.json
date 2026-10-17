@@ -13,7 +13,15 @@
       "Read(./.env)",
       "Read(./.env.*)",
       "Read(./**/*.pem)",
-      "Read(./**/*.key)"
+      "Read(./**/*.key)",
+      "Bash(gh repo create*)",
+      "Bash(terraform apply*)",
+      "Bash(terraform destroy*)",
+      "Bash(kubectl apply*)",
+      "Bash(kubectl delete*)",
+      "Bash(docker push*)",
+      "Bash(cat .env*)",
+      "Bash(cat */.env*)"
     ]
   }
 }
