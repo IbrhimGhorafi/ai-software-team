@@ -1,19 +1,23 @@
 ---
 name: architecture-evaluation-adr
-description: Evaluate architecture choices and record decisions.
+description: Use when comparing architecture options or recording consequential decisions.
 ---
 
 # Evaluate architecture choices and record decisions
 
 ## When to use
-Use this skill when the task involves evaluate architecture choices and record decisions.
+Use this skill during architecture design when boundaries, quality attributes, deployment topology, or a consequential technical choice needs evaluation.
+
 
 ## Procedure
 Start from requirements and quality attributes. Compare viable options against constraints, costs, security, operability, and reversibility. Record context, alternatives, decision, consequences, and evidence in an ADR.
 
+## Expected outputs
+- Options compared against requirements, constraints, costs, and operational burden
+- Recommended option with trade-offs and rejected alternatives
+- ADR containing context, decision, consequences, and evidence
+
 ## Quality checks
-- Confirm scope, assumptions, and relevant constraints.
-- Follow the shared instructions in `.claude/CLAUDE.md` and applicable files under `standards/`.
-- Prefer small, reversible changes and preserve traceability to requirements.
-- Run appropriate checks when available and report exact observed results; never claim unrun checks passed.
-- Identify risks, open questions, and next actions explicitly.
+- Do not choose a stack before requirements and constraints are understood.
+- Prefer the simplest option that satisfies verified needs.
+- Identify decisions requiring sponsor approval before implementation.
