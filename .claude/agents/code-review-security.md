@@ -1,6 +1,7 @@
 ---
 name: code-review-security
 description: Independently review correctness, maintainability, security, dependencies, and engineering standards.
+tools: Read, Grep, Glob
 ---
 
 # code-review-security
