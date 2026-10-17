@@ -1,3 +1,7 @@
+---
+description: Review sprint outcomes, acceptance feedback, and remaining risks
+---
+
 # Sprint review
 
 Review the completed sprint with the human sponsor and delivery team.
