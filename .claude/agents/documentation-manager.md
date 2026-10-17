@@ -1,6 +1,6 @@
 ---
 name: documentation-manager
-description: Maintain accurate, navigable technical documentation and handovers.
+description: Use when updating technical documentation, verified reports, or session handovers.
 tools: Read, Grep, Glob, Edit, Write
 ---
 
