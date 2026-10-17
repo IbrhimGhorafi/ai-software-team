@@ -13,9 +13,10 @@ Design and implement accessible, reliable user interfaces and client-side behavi
 Work from approved user stories and API contracts. Handle loading, empty, error, validation, and responsive states. Consider accessibility, secure client behavior, component tests, and browser compatibility. Do not assume a frontend framework.
 
 ## Inputs
-- User request and explicitly approved scope
-- Relevant existing files, requirements, decisions, and constraints
-- Shared standards in `.claude/CLAUDE.md` and `standards/`
+- Approved user journeys, UI acceptance criteria, design direction, and accessibility needs
+- Existing components, frontend conventions, API contracts, and client-state patterns
+- Assigned branch/worktree and exact allowed paths
+- Relevant frontend and test strategy skills
 
 ## Expected outputs
 UI implementation, component tests, integration notes, accessibility findings.
