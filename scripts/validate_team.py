@@ -296,7 +296,7 @@ if settings_text:
             "Bash(git push origin main*)", "Bash(git push origin HEAD:main*)",
             "Bash(git reset --hard*)", "Bash(git clean*)",
             "Bash(gh repo delete*)", "Bash(gh pr merge*)",
-            "Bash(rm -rf*)", "Read(./.env)",
+            "Bash(rm -rf*)", "Bash(gh repo create*)", "Bash(terraform apply*)", "Bash(terraform destroy*)",\n            "Bash(kubectl apply*)", "Bash(kubectl delete*)", "Bash(docker push*)",\n            "Bash(cat .env*)", "Bash(cat */.env*)", "Read(./.env)",
         )
         for rule in required_denies:
             if rule not in deny:
