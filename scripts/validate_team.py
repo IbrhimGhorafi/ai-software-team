@@ -11,22 +11,42 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_AGENTS = 12
-EXPECTED_SKILLS = 18
 ALLOWED_TOOLS = {"Read", "Grep", "Glob", "Edit", "Write", "Bash", "WebSearch", "WebFetch"}
-REQUIRED_COMMANDS = {
-    "kickoff.md", "plan-sprint.md", "next-story.md", "review-pr.md",
-    "status.md", "daily-report.md", "handover.md", "approve-gate.md",
-    "sprint-review.md", "retro.md", "release-check.md",
-}
-REQUIRED_TEMPLATES = {
-    "requirements-template.md", "user-story-template.md",
-    "architecture-decision-template.md", "sprint-plan-template.md",
-    "test-plan-template.md", "code-review-template.md",
-    "session-handover-template.md", "sprint-review-template.md",
-    "retrospective-template.md", "release-readiness-template.md",
-}
+MANIFEST_PATH = ROOT / ".claude" / "manifest.json"
 errors: list[str] = []
+
+
+def load_manifest() -> dict:
+    """Load and validate the declarative inventory manifest."""
+    try:
+        manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        errors.append(f"Cannot load .claude/manifest.json: {exc}")
+        return {}
+    if manifest.get("schema_version") != 1:
+        errors.append("Unsupported or missing manifest schema_version (expected 1)")
+    inventory = manifest.get("inventory")
+    if not isinstance(inventory, dict):
+        errors.append("Manifest inventory must be an object")
+        return {}
+    for kind in ("agents", "skills", "commands", "templates"):
+        spec = inventory.get(kind)
+        if not isinstance(spec, dict):
+            errors.append(f"Manifest inventory.{kind} must be an object")
+            continue
+        if not isinstance(spec.get("directory"), str) or not isinstance(spec.get("pattern"), str):
+            errors.append(f"Manifest inventory.{kind} must define string directory and pattern")
+        if kind in ("agents", "skills"):
+            count = spec.get("minimum_count")
+            if not isinstance(count, int) or isinstance(count, bool) or count < 1:
+                errors.append(f"Manifest inventory.{kind}.minimum_count must be a positive integer")
+        else:
+            required = spec.get("required")
+            if not isinstance(required, list) or not all(isinstance(item, str) and item.strip() for item in required):
+                errors.append(f"Manifest inventory.{kind}.required must be a list of non-empty filenames")
+            elif len(required) != len(set(required)):
+                errors.append(f"Manifest inventory.{kind}.required contains duplicate filenames")
+    return inventory
 
 
 def read_text(path: Path) -> str:
@@ -48,19 +68,29 @@ def require_nonempty(path: Path, label: str | None = None) -> str:
     return text
 
 
-agents_dir = ROOT / ".claude" / "agents"
-skills_dir = ROOT / ".claude" / "skills"
-commands_dir = ROOT / ".claude" / "commands"
-templates_dir = ROOT / "templates"
-agents = sorted(agents_dir.glob("*.md")) if agents_dir.is_dir() else []
-skills = sorted(skills_dir.glob("*/SKILL.md")) if skills_dir.is_dir() else []
-commands = sorted(commands_dir.glob("*.md")) if commands_dir.is_dir() else []
-templates = sorted(templates_dir.glob("*.md")) if templates_dir.is_dir() else []
+manifest_inventory = load_manifest()
 
-if len(agents) != EXPECTED_AGENTS:
-    errors.append(f"Expected {EXPECTED_AGENTS} agent files, found {len(agents)}")
-if len(skills) != EXPECTED_SKILLS:
-    errors.append(f"Expected {EXPECTED_SKILLS} skill files, found {len(skills)}")
+
+def inventory_paths(kind: str) -> list[Path]:
+    spec = manifest_inventory.get(kind, {})
+    directory = spec.get("directory")
+    pattern = spec.get("pattern")
+    if not isinstance(directory, str) or not isinstance(pattern, str):
+        return []
+    folder = ROOT / directory
+    return sorted(folder.glob(pattern)) if folder.is_dir() else []
+
+
+agents = inventory_paths("agents")
+skills = inventory_paths("skills")
+commands = inventory_paths("commands")
+templates = inventory_paths("templates")
+
+for kind, paths in (("agents", agents), ("skills", skills)):
+    spec = manifest_inventory.get(kind, {})
+    minimum = spec.get("minimum_count")
+    if isinstance(minimum, int) and not isinstance(minimum, bool) and len(paths) < minimum:
+        errors.append(f"Manifest requires at least {minimum} {kind} files, found {len(paths)}")
 
 
 def parse_frontmatter(path: Path) -> dict[str, str]:
@@ -142,17 +172,21 @@ for path in skills:
     if len(text.splitlines()) < 8:
         errors.append(f"Skill content is suspiciously short: {path.relative_to(ROOT)}")
 
-actual_commands = {path.name for path in commands}
-for name in sorted(REQUIRED_COMMANDS - actual_commands):
-    errors.append(f"Missing required command: .claude/commands/{name}")
+def check_required_files(kind: str, paths: list[Path]) -> None:
+    spec = manifest_inventory.get(kind, {})
+    required = spec.get("required", [])
+    actual = {path.name for path in paths}
+    for name in sorted(set(required) - actual):
+        errors.append(f"Missing required {kind[:-1] if kind.endswith('s') else kind}: {spec.get('directory', kind)}/{name}")
+
+
+check_required_files("commands", commands)
 for path in commands:
     text = require_nonempty(path, "command")
     if len(text.splitlines()) < 5:
         errors.append(f"Command content is suspiciously short: {path.relative_to(ROOT)}")
 
-actual_templates = {path.name for path in templates}
-for name in sorted(REQUIRED_TEMPLATES - actual_templates):
-    errors.append(f"Missing required template: templates/{name}")
+check_required_files("templates", templates)
 for path in templates:
     require_nonempty(path, "template")
 
@@ -226,10 +260,10 @@ dependabot_text = require_nonempty(dependabot_path, "Dependabot configuration")
 if dependabot_text and ("package-ecosystem: github-actions" not in dependabot_text or "interval: weekly" not in dependabot_text):
     errors.append("Dependabot must schedule weekly GitHub Actions updates")
 
-print(f"Agents: {len(agents)}/{EXPECTED_AGENTS}")
-print(f"Skills: {len(skills)}/{EXPECTED_SKILLS}")
-print(f"Commands: {len(commands)} discovered; {len(REQUIRED_COMMANDS)} required")
-print(f"Templates: {len(templates)} discovered; {len(REQUIRED_TEMPLATES)} required")
+print(f"Agents: {len(agents)} discovered; manifest minimum {manifest_inventory.get('agents', {}).get('minimum_count', 'invalid')}")
+print(f"Skills: {len(skills)} discovered; manifest minimum {manifest_inventory.get('skills', {}).get('minimum_count', 'invalid')}")
+print(f"Commands: {len(commands)} discovered; {len(manifest_inventory.get('commands', {}).get('required', []))} required by manifest")
+print(f"Templates: {len(templates)} discovered; {len(manifest_inventory.get('templates', {}).get('required', []))} required by manifest")
 print(f"Required documentation files checked: {len(required_files)}")
 print("Security checks: Claude deny rules, .gitignore, read-only CI, checkout credentials, Gitleaks and Dependabot")
 print("Static-only validation: does not prove Claude Code runtime behavior or GitHub owner settings")
