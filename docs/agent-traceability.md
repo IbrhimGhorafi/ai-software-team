@@ -38,7 +38,9 @@ Use templates/agent-delegation-template.md. Never record private chain-of-though
 
 Keep task, code, verification, and release states distinct.
 
-- **Task:** Backlog, Ready, In Progress, In Review, Changes Requested, Approved — Awaiting Human Merge, Done, Blocked.
+- **Task:** `BACKLOG`, `READY`, `CLAIMED`, `IN_PROGRESS`, `BLOCKED`, `IN_REVIEW`, `CHANGES_REQUESTED`, `APPROVED_AWAITING_HUMAN_MERGE`, `DONE`, `CANCELLED` (same canonical vocabulary as `workflows/orchestration-contract.md`).
+- **Claim validation:** `CONFIRMED` or `NEEDS_REVALIDATION`; this is a claim flag, not a task status.
+- **Reconciliation observation:** `UNKNOWN` may describe unavailable status evidence but is not a task status.
 - **Delegation:** queued, running, completed, partial, blocked, failed, cancelled, rejected (recorded as a delegation result, not a task status).
 - **Implementation:** not started, local change, committed, PR open.
 - **Verification:** not run, running, passed, failed, partially passed, unavailable.
