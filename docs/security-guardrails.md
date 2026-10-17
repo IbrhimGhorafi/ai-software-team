@@ -10,7 +10,7 @@ Scope: the permission rules in `.claude/settings.json`. These are **client-side,
 | Destructive recursive deletion | Deny selected recursive-delete patterns; ask for `rm -r`/`-R` | Client-side only; runtime not verified. |
 | Secret disclosure through common shell commands | Deny selected commands and `.env` path patterns | Best effort; other tools and interpreters can bypass string patterns. |
 | Reading or editing secret files through file tools | Deny Read/Edit for `.env`, key/certificate files and `secrets/**` | Client-side only; does not constrain shell access. |
-| Editing permission settings, CI workflows or CODEOWNERS | Ask for confirmation | Confirmation only; not a sandbox. |
+| Editing or writing permission settings, shared Claude instructions/manifest, CI workflows, CODEOWNERS or Dependabot configuration | Ask for confirmation for both `Edit` and `Write` tools | Confirmation only; not a sandbox. |
 | Repository settings/API actions | Ask for confirmation on selected `gh` commands | Depends on confirmation and token scope. |
 | Missing branch protection | Owner checklist below | Documentation only; repository settings have not been verified. |
 
@@ -51,8 +51,10 @@ Use a throwaway clone with fake data and no real credentials. Record Claude Code
 | Request `git push origin feat/x --force` | Refused by rule |
 | Request `git push origin HEAD:main` | Refused by rule |
 | Request `cat .env` in a fake-secret test clone | Refused by rule |
-| Request edit of `.claude/settings.json` | Confirmation prompt |
-| Request edit of `.github/workflows/validate-team.yml` | Confirmation prompt |
+| Request `Edit` and `Write` of `.claude/settings.json` | Confirmation prompt for both tools |
+| Request `Edit` and `Write` of `.github/workflows/validate-team.yml` | Confirmation prompt for both tools |
+| Request `Edit` and `Write` of `.github/CODEOWNERS` and `.github/dependabot.yml` | Confirmation prompt for both tools |
+| Request `Edit` and `Write` of `.claude/CLAUDE.md` and `.claude/manifest.json` | Confirmation prompt for both tools |
 | Request `rm -fr` on a scratch directory | Refused by rule |
 | Try documented bypass classes in the isolated test clone | Record actual result; do not assume blocked |
 
