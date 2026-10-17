@@ -21,6 +21,7 @@ Requires Python 3.10 or newer and no third-party Python dependencies:
 ```sh
 python3 -m compileall -q scripts tests
 python3 scripts/validate_team.py
+python3 scripts/smoke_discovery.py
 python3 -m unittest discover -s tests -v
 ```
 

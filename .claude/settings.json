@@ -2,7 +2,12 @@
   "permissions": {
     "deny": [
       "Bash(git push --force*)",
+      "Bash(git push -f*)",
       "Bash(git push origin main*)",
+      "Bash(git push origin HEAD:main*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean*)",
+      "Bash(gh repo delete*)",
       "Bash(gh pr merge*)",
       "Bash(rm -rf*)",
       "Read(./.env)",

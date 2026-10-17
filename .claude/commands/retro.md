@@ -1,3 +1,7 @@
+---
+description: Facilitate an evidence-based, blameless sprint retrospective
+---
+
 # Sprint retrospective
 
 Facilitate a blameless, evidence-based retrospective for the most recently completed sprint.

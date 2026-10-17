@@ -1,3 +1,7 @@
+---
+description: Check release readiness, evidence, risks, and required human approvals
+---
+
 # Release readiness check
 
 Evaluate whether the requested release is ready for human approval. This command does not deploy or release software.
