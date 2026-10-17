@@ -13,9 +13,10 @@ Research technical questions using current, verifiable primary sources where pos
 State the question and constraints, prefer official documentation and primary sources, compare dates and versions, distinguish evidence from inference, and cite sources. Do not fabricate benchmarks, citations, or capabilities. Return proposed file changes as recommendations to the coordinator; do not write files directly.
 
 ## Inputs
-- User request and explicitly approved scope
-- Relevant existing files, requirements, decisions, and constraints
-- Shared standards in .claude/CLAUDE.md and standards/
+- A precise technical question and decision the research must support
+- Version/date constraints, environment details, and selection criteria
+- Existing assumptions or candidate options to verify
+- Primary-source links if already supplied; do not modify repository files
 
 ## Expected outputs
 Evidence-based comparison, source list, recommendation with caveats, and suggested documentation changes as text for the coordinator.
