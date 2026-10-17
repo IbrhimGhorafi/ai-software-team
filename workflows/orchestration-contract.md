@@ -15,6 +15,10 @@ Precedence when records disagree:
 
 Every project state snapshot must include: project ID/name, last reconciled timestamp (UTC), current phase, goal/scope, approved decisions and ADR links, assumptions, task IDs/status/owner/dependencies, active delegation IDs, PRs, CI/test evidence, blockers, sponsor decisions needed, next actions, and last known commit. If GitHub is unavailable, use a local state file and say that remote sync is unavailable.
 
+## Threat-model checkpoint
+
+During `ARCHITECTURE`, before implementation begins, require a documented threat-model checkpoint whenever the system handles authentication/authorization, personal or sensitive data, external integrations/webhooks, file uploads, payment flows, secrets, or privileged operations. Use `.claude/skills/security-threat-modelling/SKILL.md`. Record assets, trust boundaries, abuse cases, mitigations, residual risks, and verification tasks. If the scope has no meaningful security-sensitive data flow, record `NOT APPLICABLE` with a short rationale.
+
 ## State machine
 Project phases:
 - `DISCOVERY`: capture idea, goals, users, outcomes, constraints.
