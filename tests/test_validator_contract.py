@@ -1,10 +1,9 @@
-"""Regression tests for the public static validator contract.
-
-These tests deliberately make no claim about Claude Code runtime behavior.
-"""
+"""Regression tests for the public static validator contract."""
 from pathlib import Path
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,14 +26,17 @@ def read_frontmatter(path: Path) -> dict[str, str]:
 
 
 class ValidatorRegressionTests(unittest.TestCase):
-    def test_static_validator_passes(self):
-        result = subprocess.run(
+    def run_validator(self, root: Path) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
             [sys.executable, "scripts/validate_team.py"],
-            cwd=ROOT,
+            cwd=root,
             capture_output=True,
             text=True,
             check=False,
         )
+
+    def test_static_validator_passes(self):
+        result = self.run_validator(ROOT)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("PASS", result.stdout)
 
@@ -60,10 +62,46 @@ class ValidatorRegressionTests(unittest.TestCase):
             if tool.strip()
         }
         forbidden = {"Edit", "Write", "Bash"} & tools
-        self.assertFalse(
-            forbidden,
-            f"Security reviewer must remain read-only; forbidden tools: {sorted(forbidden)}",
-        )
+        self.assertFalse(forbidden, f"Security reviewer must remain read-only: {sorted(forbidden)}")
+
+    def test_validator_rejects_empty_command(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            (copy / ".claude/commands/status.md").write_text("", encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("Empty required command", result.stdout)
+
+    def test_validator_rejects_missing_command(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            (copy / ".claude/commands/kickoff.md").unlink()
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("Missing required command", result.stdout)
+
+    def test_validator_rejects_removed_permission_guardrail(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            settings = copy / ".claude/settings.json"
+            settings.write_text('{"permissions":{"deny":[]}}\n', encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("permission deny rule missing", result.stdout)
+
+    def test_validator_rejects_writable_validation_workflow(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repo"
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "venv"))
+            workflow = copy / ".github/workflows/validate-team.yml"
+            text = workflow.read_text(encoding="utf-8").replace("contents: read", "contents: write")
+            workflow.write_text(text, encoding="utf-8")
+            result = self.run_validator(copy)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("read-only", result.stdout)
 
 
 if __name__ == "__main__":
