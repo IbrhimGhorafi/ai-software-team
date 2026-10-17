@@ -12,6 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_AGENTS = 12
 EXPECTED_SKILLS = 18
+ALLOWED_TOOLS = {"Read", "Grep", "Glob", "Edit", "Write", "Bash", "WebSearch", "WebFetch"}
 errors: list[str] = []
 
 agents = sorted((ROOT / ".claude" / "agents").glob("*.md"))
@@ -75,6 +76,24 @@ def check_unique_names(paths: list[Path], kind: str) -> None:
             seen[name] = path
 
 
+def check_agent_tools(paths: list[Path]) -> None:
+    for path in paths:
+        relative = path.relative_to(ROOT)
+        raw = parse_frontmatter(path).get("tools", "").strip()
+        if not raw:
+            errors.append(f"Agent must declare an explicit 'tools' allowlist: {relative}")
+            continue
+        names = [tool.strip() for tool in raw.split(",") if tool.strip()]
+        unknown = [tool for tool in names if tool not in ALLOWED_TOOLS]
+        if unknown:
+            errors.append(f"Unknown tools {unknown} in {relative}")
+        if len(set(names)) != len(names):
+            errors.append(f"Duplicate tools in {relative}")
+        if path.stem == "code-review-security" and {"Edit", "Write", "Bash"} & set(names):
+            errors.append("code-review-security must remain read-only (no Edit/Write/Bash)")
+
+
+check_agent_tools(agents)
 check_unique_names(agents, "agent")
 check_unique_names(skills, "skill")
 
@@ -132,7 +151,7 @@ if design_path.is_file():
 print(f"Agents: {len(agents)}/{EXPECTED_AGENTS}")
 print(f"Skills: {len(skills)}/{EXPECTED_SKILLS}")
 print(f"Required files checked: {len(required_files)}")
-print("Frontmatter checks: name, description, delimiter, duplicate keys and duplicate names")
+print("Frontmatter checks: name, description, agent tools allowlist, delimiter, duplicate keys and duplicate names")
 print("Orchestration checks: required contract sections and selected activation contradiction")
 print("Static-only validation: no Claude runtime, lock service, application, or tests invoked")
 
