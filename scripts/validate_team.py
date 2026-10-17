@@ -316,7 +316,9 @@ if settings_text:
             "Bash(git push*)", "Bash(rm -r*)", "Bash(rm -R*)",
             "Bash(gh api*)", "Bash(gh repo edit*)", "Bash(gh secret*)",
             "Edit(./.claude/settings.json)", "Edit(./.github/workflows/**)",
-            "Edit(./.github/CODEOWNERS)",
+            "Edit(./.github/CODEOWNERS)", "Edit(./.github/dependabot.yml)",
+            "Write(./.claude/settings.json)", "Write(./.github/workflows/**)",
+            "Write(./.github/CODEOWNERS)", "Write(./.github/dependabot.yml)",
         )
         permissions = settings.get("permissions", {})
         ask = permissions.get("ask", [])
