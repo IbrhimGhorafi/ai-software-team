@@ -1,6 +1,7 @@
 ---
 name: project-manager
 description: Coordinate the AI delivery team, maintain project state, manage dependencies, and report verified progress.
+tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
 # project-manager
