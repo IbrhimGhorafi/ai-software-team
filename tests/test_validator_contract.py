@@ -51,6 +51,28 @@ class ValidatorRegressionTests(unittest.TestCase):
                     f"{path.relative_to(ROOT)} has duplicate tools",
                 )
 
+    def test_required_agile_commands_and_templates_exist_and_are_nonempty(self):
+        required = [
+            ".claude/commands/kickoff.md",
+            ".claude/commands/plan-sprint.md",
+            ".claude/commands/next-story.md",
+            ".claude/commands/approve-gate.md",
+            ".claude/commands/review-pr.md",
+            ".claude/commands/status.md",
+            ".claude/commands/handover.md",
+            ".claude/commands/daily-report.md",
+            "templates/project-state-template.md",
+            "docs/agile-command-reference.md",
+            "workflows/sprint-execution-checklist.md",
+            "standards/security-principles.md",
+            "standards/definition-of-done.md",
+        ]
+        for relative in required:
+            with self.subTest(path=relative):
+                path = ROOT / relative
+                self.assertTrue(path.is_file(), f"Missing required file: {relative}")
+                self.assertTrue(path.read_text(encoding="utf-8").strip(), f"Empty required file: {relative}")
+
     def test_security_reviewer_is_read_only(self):
         path = AGENTS / "code-review-security.md"
         self.assertTrue(path.is_file(), "Security reviewer agent is missing")
