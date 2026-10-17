@@ -8,7 +8,7 @@ Configure these settings in GitHub **Settings → Rules → Rulesets** (or branc
 
 - Require a pull request before merging.
 - Require at least one approval if the repository has another eligible reviewer; otherwise document the solo-maintainer exception and keep CI required.
-- Require the `Static configuration checks (Python 3.10)`, `Static configuration checks (Python 3.11)`, and `Static configuration checks (Python 3.12)` checks.
+- Require the `Static configuration checks (Python 3.10)`, `Static configuration checks (Python 3.11)`, `Static configuration checks (Python 3.12)`, and secret-scan workflow checks. Use the exact check names shown on a real pull request.
 - Require branches to be up to date before merging when practical.
 - Block force pushes and branch deletion.
 - Do not allow routine direct pushes to `main`; tightly limit any bypass list.
@@ -26,7 +26,7 @@ A workflow file cannot enable branch protection by itself. Verify the active rul
 
 ## Secret scanning
 
-Use GitHub secret scanning / push protection when available for the repository plan. Run an established local scanner (for example, Gitleaks) in CI if the project adopts and pins it. Any custom regex scanner is heuristic and must fail closed when it cannot inspect the repository; it must never report a successful scan after skipping work.
+Use GitHub secret scanning / push protection when available for the repository plan. This repository includes `.github/workflows/secret-scan.yml`, which runs Gitleaks on pushes to `main`, pull requests, and manual dispatch. The workflow pins third-party actions to full commit SHAs and checks out full history. Inspect its actual CI result after each change; a workflow file alone is not evidence that a scan passed. Any custom regex scanner is heuristic and must fail closed when it cannot inspect the repository.
 
 ## License
 
