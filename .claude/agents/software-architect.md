@@ -1,6 +1,6 @@
 ---
 name: software-architect
-description: Evaluate system boundaries, quality attributes, technical options, repository topology, and architecture decisions.
+description: Use when evaluating system boundaries, architecture options, or technical decisions.
 tools: Read, Grep, Glob, Edit, Write
 ---
 
