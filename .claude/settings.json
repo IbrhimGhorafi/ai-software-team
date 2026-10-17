@@ -59,7 +59,12 @@
       "Bash(gh secret*)",
       "Edit(./.claude/settings.json)",
       "Edit(./.github/workflows/**)",
-      "Edit(./.github/CODEOWNERS)"
+      "Edit(./.github/CODEOWNERS)",
+      "Write(./.claude/settings.json)",
+      "Write(./.github/workflows/**)",
+      "Write(./.github/CODEOWNERS)",
+      "Edit(./.github/dependabot.yml)",
+      "Write(./.github/dependabot.yml)"
     ]
   }
 }
