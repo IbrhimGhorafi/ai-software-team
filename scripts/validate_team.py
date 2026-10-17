@@ -319,6 +319,8 @@ if settings_text:
             "Edit(./.github/CODEOWNERS)", "Edit(./.github/dependabot.yml)",
             "Write(./.claude/settings.json)", "Write(./.github/workflows/**)",
             "Write(./.github/CODEOWNERS)", "Write(./.github/dependabot.yml)",
+            "Edit(./.claude/CLAUDE.md)", "Write(./.claude/CLAUDE.md)",
+            "Edit(./.claude/manifest.json)", "Write(./.claude/manifest.json)",
         )
         permissions = settings.get("permissions", {})
         ask = permissions.get("ask", [])
