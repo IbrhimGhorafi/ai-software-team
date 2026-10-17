@@ -26,11 +26,11 @@ def load_manifest() -> dict:
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         errors.append(f"Cannot load .claude/manifest.json: {exc}")
         return {}
-    if manifest.get("schema_version") != 1:
-        errors.append("Unsupported or missing manifest schema_version (expected 1)")
     if not isinstance(manifest, dict):
         errors.append("Manifest root must be a JSON object")
         return {}
+    if manifest.get("schema_version") != 1:
+        errors.append("Unsupported or missing manifest schema_version (expected 1)")
     inventory = manifest.get("inventory")
     if not isinstance(inventory, dict):
         errors.append("Manifest inventory must be an object")
@@ -299,6 +299,7 @@ if settings_text:
             "Bash(rm -rf*)", "Bash(gh repo create*)", "Bash(terraform apply*)", "Bash(terraform destroy*)",
             "Bash(kubectl apply*)", "Bash(kubectl delete*)", "Bash(docker push*)",
             "Bash(cat .env*)", "Bash(cat */.env*)", "Read(./.env)",
+            "Read(./.env.*)", "Read(./**/*.pem)", "Read(./**/*.key)",
         )
         for rule in required_denies:
             if rule not in deny:
