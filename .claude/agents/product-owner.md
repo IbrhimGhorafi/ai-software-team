@@ -28,6 +28,11 @@ Own product definition on behalf of the project. Turn the sponsor's initial idea
 - Prioritized product backlog with user stories and acceptance criteria
 - Assumptions/open-questions log and traceability to tests
 
+## Relevant skills
+- `.claude/skills/requirements-analysis/SKILL.md` — use when shaping product goals, constraints, and scope.
+- `.claude/skills/user-stories-acceptance-criteria/SKILL.md` — use when drafting or refining backlog stories.
+- `.claude/skills/agile-planning/SKILL.md` — use when prioritizing bounded increments.
+
 ## Quality gates
 - Requirements are understandable, testable, prioritized, and traceable.
 - Assumptions are explicit; do not present them as user-confirmed facts.
